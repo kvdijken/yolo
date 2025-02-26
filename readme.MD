@@ -32,7 +32,31 @@ This shows a FM signal (carrier frequency = 10.7MHz, modulation frequency sweep 
 <br>
 <br>
 
+## Usage
 
+### On linux:
+
+From the directory in which `yolo.py` was installed:
+```
+python3 -m yolo.py
+```
+
+### On macOS:
+
+### On Windows:
+
+
+
+
+
+## Tested with
+
+- Fedora Linux 39
+- Gnome 45.10
+- Linux 6.11.9-100.fc39.x86_64
+- oscilloscope: Siglent SDS1202X-E
+- signale generator: Siglent SDG1032X
+- python 3.11.11
 
 
 ## Requirements
@@ -74,5 +98,12 @@ uvloop               0.19.0a1
 <br>
 <br>
 
-Has been tested with python version 3.11.11.
+## pyvisa vs. pydatacq
+
+
+## More to do
+
+- make engine a class
+- set sample memory as low as needed
+
 

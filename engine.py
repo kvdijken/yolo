@@ -96,9 +96,9 @@ active = {
     keySDGFMAmplitude: "1",
     keySDGFMFrequencyDeviation: "75k",
     keySDGFixedF0: "1k",
-    keySDGSweepMinFreq: "1M",
-    keySDGSweepMaxFreq: "10M",
-    keySDGSweepStep: "500k",
+    keySDGSweepMinFreq: "1k",
+    keySDGSweepMaxFreq: "10k",
+    keySDGSweepStep: "500",
     
     keySDSChannel: "1",
     keySDSAutoVertical: True,
