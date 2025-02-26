@@ -899,6 +899,10 @@ async def setupSDGandSDS(settings):
             amp = settings[keySDGFMAmplitude]
             mod = "FM"
 
+        # set carrier frequency
+        cmd = f"C{str(settings[keySDGChannel])}:BSWV FRQ,{freq}"
+        await sdgSend(cmd)
+
         # Set carrier amplitude
         cmd = f"C{settings[keySDGChannel]}:BSWV AMP,{amp}"
         await sdgSend(cmd)
