@@ -859,12 +859,6 @@ async def setupSDGandSDS(settings):
         if sdg is None:
             sdg = SDG(sdgIP, sdgPort, use_visa=sdgUseVisa,query_delay = sdgQueryDelay)
 
-        # identify
-        # cmd = "*IDN?"
-        # log(cmd)
-        # idn = await sdg.async_query_string(cmd)
-        # log(f"Connect to {idn}")
-
         # Reset
         cmd = "*RST"
         await sdgSend(cmd)
@@ -998,15 +992,14 @@ async def run(settings):
     active = copy.deepcopy(settings)
 
     # Create an oscilloscope process if it does not exist yet.
-    if live_sds is None:
-        live_sds = LiveSDS(
-            f"THD from channel {active[keySDSChannel]} SDS1202X-E",
-            sdsIP,
-            sdsPort,
-            active[keySDSChannel] - 1,  # 0-based
-            processWave,
-            use_uvloop=False,  # For Qt we use qasync's QEventLoop
-        )
+    live_sds = LiveSDS(
+        f"THD from channel {active[keySDSChannel]} SDS1202X-E",
+        sdsIP,
+        sdsPort,
+        active[keySDSChannel] - 1,  # 0-based
+        processWave,
+        use_uvloop=False,  # For Qt we use qasync's QEventLoop
+    )
 
     # Setup the SDG and SDS
     await setupSDGandSDS(settings)
@@ -1023,7 +1016,7 @@ async def run(settings):
     # has finished.
     if runningSweepMode:
         await runSweep(settings)
-        live_sds.stop()
+        stopSDS()
     else:
         # In FIX mode we only have to set some SDG things.
         # We leave it free-running mode until the user stops
@@ -1033,6 +1026,13 @@ async def run(settings):
         await startFix(settings)
 
     return True
+
+
+#
+def stopSDS():
+    global live_sds
+    live_sds.stop()
+    live_sds = None
 
 
 #
@@ -1068,7 +1068,7 @@ def stop(window):
     global mainWindow, _cancelSweep
     mainWindow = window
     if live_sds is not None:
-        live_sds.stop()
+        stopSDS()
     _cancelSweep = True
     if _eventRunFinished is not None:
         _eventRunFinished.set()
