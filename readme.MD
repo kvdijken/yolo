@@ -51,7 +51,7 @@ On first use the ip-addresses of the oscilloscope and the signal generator needs
 
 ![Alt text](resources/settings.png)
 
-The data in this dialog will be saved in `/home/koen/.config/FM Homelab/yolo.conf`
+The data in this dialog will be saved in `/home/<user>/.config/FM Homelab/yolo.conf`
 
 
 ## Tested with
