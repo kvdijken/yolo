@@ -128,6 +128,7 @@ It is unknown how this works on other signal generators than the SDG1032X.
 - export THD plot to file
 - export THD and Amplitude vs. frequency data to file in csv format
 - sweep amplitude (this will require a major rework of the gui as well)
+- label both y-axes in THD plot with lines equal as in the plot
 - 
 
 
