@@ -54,13 +54,16 @@ On first use the ip-addresses of the oscilloscope and the signal generator needs
 The data in this dialog will be saved in `/home/<user>/.config/FM Homelab/yolo.conf`
 
 
+### Use without signal generator
+
+
 ## Tested with
 
 - Fedora Linux 39
 - Gnome 45.10
 - Linux 6.11.9-100.fc39.x86_64
 - oscilloscope: Siglent SDS1202X-E
-- signale generator: Siglent SDG1032X
+- signal generator: Siglent SDG1032X
 - python 3.11.11
 
 
@@ -105,6 +108,13 @@ uvloop               0.19.0a1
 
 ## pyvisa vs. pydatacq
 
+To circumvent some peculiarities in the SCPI over TCP implementation in the Siglent SDG1032X signal generator special code was written in the pydatacq package. This package communicates with the SDG1032X and SDS1202X-E.
+
+Normal read/write communication with the SDG1032X and SDS1202X-E is done with python's asyncio package. This packages communicates in plain TCP with the devices. On the SDG1032X this leads to long required wait times of 0.5 seconds between writes to the device. If the waits are omitted the SDG1032X will hang. To circumvent this, the SDG1032X can also be programmed in SCPI over PyVisa. The PyVisa package communicates SCPI over VXI-11 over TCP which does not require long waits between writes. Communication with the SDG1032X will be much faster.
+
+It is unknown how this works on other signal generators than the SDG1032X.
+
+
 
 ## More to do
 
@@ -113,6 +123,11 @@ uvloop               0.19.0a1
 - make settings dialog a modal dialog
 - clean up code
 - document code
- 
+- better auto V/div adjustment in the oscilloscope views
+- prepare for oscilloscopes with more than 2 channels
+- export THD plot to file
+- export THD and Amplitude vs. frequency data to file in csv format
+- sweep amplitude (this will require a major rework of the gui as well)
+- 
 
 
