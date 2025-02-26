@@ -21,9 +21,6 @@ class THDWidget(LiveWidget):
         self, parent=None, ylabel="THD (%)", xlabel="Fundamental Frequency", dpi=100
     ):
         super().__init__(parent=parent, ylabel=ylabel, xlabel=xlabel, dpi=dpi)
-        # self.axL.set_ylim(0, None)
-        # if self.axR is not None:
-        #     self.axR.set_ylim(0, None)
         self.axL.xaxis.set_major_formatter(self.XAxis_Formatter)
 
     #
@@ -57,7 +54,7 @@ class THDWidget(LiveWidget):
             Returns the smallest multiple of 10dB
             in which the entire ampl_ range fits.
             """
-            k = 1
+            k = 10
             low = np.amin(ampl_)
             low = int(low // k) * k
             high = np.amax(ampl_)

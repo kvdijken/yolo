@@ -101,7 +101,7 @@ active = {
     keySDGSweepStep: "500",
     
     keySDSChannel: "1",
-    keySDSAutoVertical: True,
+    keySDSAutoVertical: False,
     keySDSAutoTimebase: True,
     keySDSPeriods: 50,
     
@@ -299,7 +299,7 @@ def processSweep(thd,ampl):
         # Skip the first (few) samples to dismiss
         # any switching artefacts.
         _skip += 1
-        if _skip < 2:
+        if _skip < 5:
             return
 
         _sweepSamples += 1
@@ -313,6 +313,8 @@ def processSweep(thd,ampl):
         avgTHD = _sweepSumTHD / _sweepSamples
         thd_.append(avgTHD)
         _sweepSumTHD = 0
+
+#        print(f'THD = {np.round(avgTHD,2)}%')
         
         # Plot the amplitude
         avgAmpl = _sweepSumAmpl / _sweepSamples
@@ -377,7 +379,7 @@ def vertical(v,sds_vdiv,sds_offs):
     vmax = np.amax(v)
     vmin = np.amin(v)
     vdiff = vmax - vmin
-    vdiff *= 1.1
+    vdiff *= 1.2
     
     # Calculate the optimal vertical scale (for 8 vertical 
     # divisions), or 10, but then it does not fit on the scopes 
@@ -417,6 +419,19 @@ async def processWave(wave):
         
         # voltage
         v = wave[1][1]
+        
+        # Sanity check
+        if t is None or v is None:
+            return
+        if t.ndim != 1 or v.ndim != 1:
+            # Not a 1-dimensional array
+            return
+        if t.shape[0] == 0 or v.shape[0] == 0:
+            # Empty array
+            return
+        if t.shape[0] != v.shape[0]:
+            # Time and voltage arrays not same size
+            return
         
         sds_vdiv = wave[1][2]
         sds_offs = wave[1][3]
@@ -652,8 +667,12 @@ def validate(settings):
                 False,
                 "Maximum sweep frequency must be larger than the minimum sweep frequency.",
             )
-        if sweepMax > 30_000_000:
-            return False, "Maximum sweep step frequency cannot be larger than 30 MHz."
+        if settings[keySDGMode] in {SDGMode.AM, SDGMode.FM}:
+            if sweepMax > 20_000:
+                return False, "On the SDG1032X the  modulation frequency canno be higher than 20 kHz."
+        else:
+            if sweepMax > 30_000_000:
+                return False, "Maximum sweep step frequency cannot be larger than 30 MHz."
 
         #        validateInt(keySDGSweep_steps)
         sweepStep = validateReal(keySDGSweepStep)
@@ -714,8 +733,6 @@ async def setSDGFrequency(settings, freq):
         cmd = f"C{ch}:MDWV AM,FRQ,{freq}"
     elif settings[keySDGMode] == SDGMode.FM:
         cmd = f"C{ch}:MDWV FM,FRQ,{freq}"
-    log(cmd)
-#    await sdg.async_send(cmd)
     await sdgSend(cmd)
 
 
