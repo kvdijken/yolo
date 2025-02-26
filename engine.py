@@ -85,7 +85,7 @@ class SDGFixSweep(Enum):
 # This serves as the defaults as well.
 active = {
     keySDGUse: True,
-    keySDGChannel: 2,
+    keySDGChannel: 1,
     keySDGMode: SDGMode.CW,
     keySDGCWAmplitude: 1,
     keySDGFixSweep: SDGFixSweep.FIX,
@@ -100,7 +100,7 @@ active = {
     keySDGSweepMaxFreq: "10M",
     keySDGSweepStep: "500k",
     
-    keySDSChannel: "2",
+    keySDSChannel: "1",
     keySDSAutoVertical: True,
     keySDSAutoTimebase: True,
     keySDSPeriods: 50,
