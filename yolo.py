@@ -27,12 +27,12 @@ import matplotlib_rc
 company = "FM Homelab"
 name = "yolo"
 
-settingGroupSDG = 'sdg'
+settingGroupSDG = "sdg"
 settingsSDGIP = "ip"
 settingSDGPort = "port"
-settingSDGQueryDelay = 'query_delay'
+settingSDGQueryDelay = "query_delay"
 settingUseVisa = "use_visa"
-settingGroupSDS = 'sds'
+settingGroupSDS = "sds"
 settingSDSIP = "ip"
 settingSDSPort = "port"
 
@@ -50,7 +50,7 @@ class MainWindow(QMainWindow):
     def __init__(self, parent=None):
         super(MainWindow, self).__init__(parent)
         self.ui = Ui_MainWindow()
-        
+
         self.ui.setupUi(self)
 
         self.ui.btnStart.clicked.connect(self.start_onclick)
@@ -122,9 +122,8 @@ class MainWindow(QMainWindow):
         self.ui.actionAbout.triggered.connect(self.about)
         self.ui.actionSettings.triggered.connect(self.openSettings)
         self.loop = loop
-        
+
         self.readSettings()
-        
 
     @QtCore.Slot()
     def useSDGChanged(self):
@@ -146,28 +145,45 @@ class MainWindow(QMainWindow):
         self.ui.groupTHDPlot.setVisible(not fixed)
 
     def readSettings(self):
-        
+
         def valueToBool(value):
-            return value.lower() == 'true' if isinstance(value, str) else bool(value)        
-        
-        settings = QSettings(company,name)
+            return value.lower() == "true" if isinstance(value, str) else bool(value)
+
+        settings = QSettings(company, name)
         settings.beginGroup(settingGroupSDG)
-        engine.sdgIP = settings.value(settingsSDGIP,defaultValue=engine.sdgIP)
-        engine.sdgPort = int(settings.value(settingSDGPort,defaultValue=engine.sdgPort))
-        engine.sdgQueryDelay = float(settings.value(settingSDGQueryDelay,defaultValue=engine.sdgQueryDelay))
-        engine.sdgUseVisa = valueToBool(settings.value(settingUseVisa,defaultValue=engine.sdgUseVisa))
+        engine.sdgIP = settings.value(settingsSDGIP, defaultValue=engine.sdgIP)
+        try:
+            engine.sdgPort = int(
+                settings.value(settingSDGPort, defaultValue=engine.sdgPort)
+            )
+        except:
+            engine.sdgPort = None
+        try:
+            engine.sdgQueryDelay = float(
+                settings.value(settingSDGQueryDelay, defaultValue=engine.sdgQueryDelay)
+            )
+        except:
+            engine.sdgQueryDelay = None
+        engine.sdgUseVisa = valueToBool(
+            settings.value(settingUseVisa, defaultValue=engine.sdgUseVisa)
+        )
         settings.endGroup()
         settings.beginGroup(settingGroupSDS)
-        engine.sdsIP = settings.value(settingSDSIP,defaultValue=engine.sdsIP)
-        engine.sdsPort = int(settings.value(settingSDSPort,defaultValue=engine.sdsPort))
+        engine.sdsIP = settings.value(settingSDSIP, defaultValue=engine.sdsIP)
+        try:
+            engine.sdsPort = int(
+                settings.value(settingSDSPort, defaultValue=engine.sdsPort)
+            )
+        except:
+            engine.sdsPort = None
         settings.endGroup()
-    
+
     @QtCore.Slot()
     def openSettings(self):
-        
+
         class Settings(QDialog, ui_settings.Ui_Settings):
-            
-            def __init__(self,*args,**kwargs):
+
+            def __init__(self, *args, **kwargs):
                 QDialog.__init__(self, *args, **kwargs)
                 self.setupUi(self)
                 self.btnCancel.clicked.connect(self.reject)
@@ -179,7 +195,7 @@ class MainWindow(QMainWindow):
                 self.edtSDSIP.setText(engine.sdsIP)
                 self.edtSDSPort.setText(str(engine.sdsPort))
                 self.btnOk.clicked.connect(self.save)
-            
+
             def save(self):
                 engine.sdgIP = self.edtSDGIP.text()
                 engine.sdgPort = int(self.edtSDGPort.text())
@@ -187,24 +203,23 @@ class MainWindow(QMainWindow):
                 engine.sdgUseVisa = self.radioPyvisa.isChecked()
                 engine.sdsIP = self.edtSDSIP.text()
                 engine.sdsPort = int(self.edtSDSPort.text())
-                
+
                 # Save settings
-                settings = QSettings(company,name)
+                settings = QSettings(company, name)
                 settings.beginGroup(settingGroupSDG)
-                settings.setValue(settingsSDGIP,engine.sdgIP)
-                settings.setValue(settingSDGPort,engine.sdgPort)
-                settings.setValue(settingSDGQueryDelay,float(engine.sdgQueryDelay))
-                settings.setValue(settingUseVisa,engine.sdgUseVisa)
+                settings.setValue(settingsSDGIP, engine.sdgIP)
+                settings.setValue(settingSDGPort, engine.sdgPort)
+                settings.setValue(settingSDGQueryDelay, float(engine.sdgQueryDelay))
+                settings.setValue(settingUseVisa, engine.sdgUseVisa)
                 settings.endGroup()
                 settings.beginGroup(settingGroupSDS)
-                settings.setValue(settingSDSIP,engine.sdsIP)
-                settings.setValue(settingSDSPort,engine.sdsPort)
+                settings.setValue(settingSDSIP, engine.sdsIP)
+                settings.setValue(settingSDSPort, engine.sdsPort)
                 settings.endGroup()
-                
+
         self._settings = Settings()
         self._settings.show()
 
-        
     @QtCore.Slot()
     def about(self):
         self._windowAbout = QMainWindow()

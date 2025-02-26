@@ -127,11 +127,11 @@ def qCheckState2Bool(s):
     return s == QtCore.Qt.CheckState.Checked
 
 
-sdgIP = "192.168.1.118"
+sdgIP = ""
 sdgPort = 5025
 sdgUseVisa = True
 sdgQueryDelay = 0.5
-sdsIP = "192.168.1.227"
+sdsIP = ""
 sdsPort = 5025
 
 
