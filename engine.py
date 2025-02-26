@@ -14,7 +14,7 @@ from sdg import SDG
 from pydatacq.sds import vdiv_lookup
 
 
-# The flaf which tells the THD process to cancel
+# The flag which tells the THD process to cancel
 # as soon as possible.
 _cancelSweep: bool = False
 

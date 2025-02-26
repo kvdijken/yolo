@@ -1,12 +1,5 @@
-import matplotlib.pyplot as plt
-from matplotlib.backends.backend_qtagg import FigureCanvas
-from matplotlib.figure import Figure
-from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
-
-from pydatacq import SDS, LiveSDS
-from fft_calculations import V_to_Vrms, Vrms_to_dBVrms, fft, thd
+from fft_calculations import V_to_Vrms, Vrms_to_dBVrms
 import quantiphy as q
-import matplotlib_rc
 
 import traceback
 

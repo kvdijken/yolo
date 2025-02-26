@@ -1675,6 +1675,16 @@ QProgressBar::chunk
                  <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
                 </property>
                 <item row="1" column="0">
+                 <widget class="QLabel" name="label_5">
+                  <property name="text">
+                   <string>Harmonics</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="1" column="1">
+                 <widget class="QLineEdit" name="edtTHDHarmonics"/>
+                </item>
+                <item row="2" column="0">
                  <widget class="QLabel" name="label_16">
                   <property name="text">
                    <string>Floor (dB&lt;sub&gt;V&lt;sub&gt;rms&lt;/sub&gt;&lt;/sub&gt;)</string>
@@ -1684,94 +1694,84 @@ QProgressBar::chunk
                   </property>
                  </widget>
                 </item>
-                <item row="1" column="1">
+                <item row="2" column="1">
                  <widget class="QLineEdit" name="edtTHDFloor"/>
                 </item>
-                <item row="0" column="0">
-                 <widget class="QLabel" name="label_5">
-                  <property name="text">
-                   <string>Harmonics</string>
-                  </property>
-                 </widget>
-                </item>
-                <item row="0" column="1">
-                 <widget class="QLineEdit" name="edtTHDHarmonics"/>
-                </item>
-                <item row="2" column="0">
+                <item row="3" column="0">
                  <widget class="QLabel" name="label_9">
                   <property name="text">
                    <string>Average</string>
                   </property>
                  </widget>
                 </item>
-                <item row="2" column="1">
+                <item row="3" column="1">
                  <widget class="QLineEdit" name="edtTHDAverage"/>
                 </item>
                </layout>
               </widget>
              </item>
-            </layout>
-           </widget>
-          </item>
-          <item>
-           <widget class="QGroupBox" name="groupFFTPlot">
-            <property name="title">
-             <string>FFT plot</string>
-            </property>
-            <layout class="QFormLayout" name="formLayout_9">
-             <property name="labelAlignment">
-              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-             </property>
-             <item row="0" column="0">
-              <widget class="QLabel" name="label_17">
-               <property name="text">
-                <string>FFT min. Y (dB&lt;sub&gt;V&lt;sub&gt;rms&lt;/sub&gt;&lt;/sub&gt;)</string>
+             <item>
+              <widget class="QGroupBox" name="groupFFTPlot">
+               <property name="title">
+                <string>FFT plot</string>
                </property>
-               <property name="alignment">
-                <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
-               </property>
+               <layout class="QFormLayout" name="formLayout_9">
+                <property name="labelAlignment">
+                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                </property>
+                <item row="0" column="0">
+                 <widget class="QLabel" name="label_17">
+                  <property name="text">
+                   <string>FFT min. Y (dB&lt;sub&gt;V&lt;sub&gt;rms&lt;/sub&gt;&lt;/sub&gt;)</string>
+                  </property>
+                  <property name="alignment">
+                   <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+                  </property>
+                 </widget>
+                </item>
+                <item row="0" column="1">
+                 <widget class="QLineEdit" name="edtFFTPlotMinY"/>
+                </item>
+                <item row="1" column="0">
+                 <widget class="QLabel" name="label_18">
+                  <property name="text">
+                   <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;FFT max. Y (dB&lt;span style=&quot; vertical-align:sub;&quot;&gt;Vrms&lt;/span&gt;)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                  </property>
+                  <property name="alignment">
+                   <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+                  </property>
+                 </widget>
+                </item>
+                <item row="1" column="1">
+                 <widget class="QLineEdit" name="edtFFTPlotMaxY"/>
+                </item>
+               </layout>
               </widget>
              </item>
-             <item row="0" column="1">
-              <widget class="QLineEdit" name="edtFFTPlotMinY"/>
-             </item>
-             <item row="1" column="0">
-              <widget class="QLabel" name="label_18">
-               <property name="text">
-                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;FFT max. Y (dB&lt;span style=&quot; vertical-align:sub;&quot;&gt;Vrms&lt;/span&gt;)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             <item>
+              <widget class="QGroupBox" name="groupTHDPlot">
+               <property name="title">
+                <string>THD plot</string>
                </property>
-               <property name="alignment">
-                <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
-               </property>
-              </widget>
-             </item>
-             <item row="1" column="1">
-              <widget class="QLineEdit" name="edtFFTPlotMaxY"/>
-             </item>
-            </layout>
-           </widget>
-          </item>
-          <item>
-           <widget class="QGroupBox" name="groupTHDPlot">
-            <property name="title">
-             <string>THD plot</string>
-            </property>
-            <layout class="QFormLayout" name="formLayout_10">
-             <property name="labelAlignment">
-              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-             </property>
-             <item row="0" column="0">
-              <widget class="QLabel" name="label_6">
-               <property name="text">
-                <string>Plot amplitude</string>
-               </property>
-              </widget>
-             </item>
-             <item row="0" column="1">
-              <widget class="QCheckBox" name="edtTHDAmplitude">
-               <property name="text">
-                <string/>
-               </property>
+               <layout class="QFormLayout" name="formLayout_10">
+                <property name="labelAlignment">
+                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                </property>
+                <item row="0" column="0">
+                 <widget class="QLabel" name="label_6">
+                  <property name="text">
+                   <string>Plot amplitude</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="0" column="1">
+                 <widget class="QCheckBox" name="edtTHDAmplitude">
+                  <property name="text">
+                   <string/>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
               </widget>
              </item>
             </layout>
@@ -1800,19 +1800,6 @@ QProgressBar::chunk
              </item>
             </layout>
            </widget>
-          </item>
-          <item>
-           <spacer name="verticalSpacer">
-            <property name="orientation">
-             <enum>Qt::Vertical</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>20</width>
-              <height>40</height>
-             </size>
-            </property>
-           </spacer>
           </item>
           <item>
            <widget class="QFrame" name="frame_5">

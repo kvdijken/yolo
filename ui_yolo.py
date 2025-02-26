@@ -1484,42 +1484,40 @@ class Ui_MainWindow(object):
         self.formLayout_5.setLabelAlignment(
             Qt.AlignRight | Qt.AlignTrailing | Qt.AlignVCenter
         )
-        self.label_16 = QLabel(self.groupTHD)
-        self.label_16.setObjectName("label_16")
-        self.label_16.setAlignment(Qt.AlignLeading | Qt.AlignLeft | Qt.AlignVCenter)
-
-        self.formLayout_5.setWidget(1, QFormLayout.LabelRole, self.label_16)
-
-        self.edtTHDFloor = QLineEdit(self.groupTHD)
-        self.edtTHDFloor.setObjectName("edtTHDFloor")
-
-        self.formLayout_5.setWidget(1, QFormLayout.FieldRole, self.edtTHDFloor)
-
         self.label_5 = QLabel(self.groupTHD)
         self.label_5.setObjectName("label_5")
 
-        self.formLayout_5.setWidget(0, QFormLayout.LabelRole, self.label_5)
+        self.formLayout_5.setWidget(1, QFormLayout.LabelRole, self.label_5)
 
         self.edtTHDHarmonics = QLineEdit(self.groupTHD)
         self.edtTHDHarmonics.setObjectName("edtTHDHarmonics")
 
-        self.formLayout_5.setWidget(0, QFormLayout.FieldRole, self.edtTHDHarmonics)
+        self.formLayout_5.setWidget(1, QFormLayout.FieldRole, self.edtTHDHarmonics)
+
+        self.label_16 = QLabel(self.groupTHD)
+        self.label_16.setObjectName("label_16")
+        self.label_16.setAlignment(Qt.AlignLeading | Qt.AlignLeft | Qt.AlignVCenter)
+
+        self.formLayout_5.setWidget(2, QFormLayout.LabelRole, self.label_16)
+
+        self.edtTHDFloor = QLineEdit(self.groupTHD)
+        self.edtTHDFloor.setObjectName("edtTHDFloor")
+
+        self.formLayout_5.setWidget(2, QFormLayout.FieldRole, self.edtTHDFloor)
 
         self.label_9 = QLabel(self.groupTHD)
         self.label_9.setObjectName("label_9")
 
-        self.formLayout_5.setWidget(2, QFormLayout.LabelRole, self.label_9)
+        self.formLayout_5.setWidget(3, QFormLayout.LabelRole, self.label_9)
 
         self.edtTHDAverage = QLineEdit(self.groupTHD)
         self.edtTHDAverage.setObjectName("edtTHDAverage")
 
-        self.formLayout_5.setWidget(2, QFormLayout.FieldRole, self.edtTHDAverage)
+        self.formLayout_5.setWidget(3, QFormLayout.FieldRole, self.edtTHDAverage)
 
         self.verticalLayout_3.addWidget(self.groupTHD)
 
-        self.verticalLayout_2.addWidget(self.widgetControls)
-
-        self.groupFFTPlot = QGroupBox(self.frame_2)
+        self.groupFFTPlot = QGroupBox(self.widgetControls)
         self.groupFFTPlot.setObjectName("groupFFTPlot")
         self.formLayout_9 = QFormLayout(self.groupFFTPlot)
         self.formLayout_9.setObjectName("formLayout_9")
@@ -1548,9 +1546,9 @@ class Ui_MainWindow(object):
 
         self.formLayout_9.setWidget(1, QFormLayout.FieldRole, self.edtFFTPlotMaxY)
 
-        self.verticalLayout_2.addWidget(self.groupFFTPlot)
+        self.verticalLayout_3.addWidget(self.groupFFTPlot)
 
-        self.groupTHDPlot = QGroupBox(self.frame_2)
+        self.groupTHDPlot = QGroupBox(self.widgetControls)
         self.groupTHDPlot.setObjectName("groupTHDPlot")
         self.formLayout_10 = QFormLayout(self.groupTHDPlot)
         self.formLayout_10.setObjectName("formLayout_10")
@@ -1567,7 +1565,9 @@ class Ui_MainWindow(object):
 
         self.formLayout_10.setWidget(0, QFormLayout.FieldRole, self.edtTHDAmplitude)
 
-        self.verticalLayout_2.addWidget(self.groupTHDPlot)
+        self.verticalLayout_3.addWidget(self.groupTHDPlot)
+
+        self.verticalLayout_2.addWidget(self.widgetControls)
 
         self.groupComm = QGroupBox(self.frame_2)
         self.groupComm.setObjectName("groupComm")
@@ -1584,12 +1584,6 @@ class Ui_MainWindow(object):
         self.horizontalLayout_2.addWidget(self.textComm)
 
         self.verticalLayout_2.addWidget(self.groupComm)
-
-        self.verticalSpacer = QSpacerItem(
-            20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding
-        )
-
-        self.verticalLayout_2.addItem(self.verticalSpacer)
 
         self.frame_5 = QFrame(self.frame_2)
         self.frame_5.setObjectName("frame_5")
@@ -1799,13 +1793,13 @@ class Ui_MainWindow(object):
         self.checkSDS_autoHorizontal.setText("")
         self.label_4.setText(QCoreApplication.translate("MainWindow", "Periods", None))
         self.groupTHD.setTitle(QCoreApplication.translate("MainWindow", "THD", None))
+        self.label_5.setText(
+            QCoreApplication.translate("MainWindow", "Harmonics", None)
+        )
         self.label_16.setText(
             QCoreApplication.translate(
                 "MainWindow", "Floor (dB<sub>V<sub>rms</sub></sub>)", None
             )
-        )
-        self.label_5.setText(
-            QCoreApplication.translate("MainWindow", "Harmonics", None)
         )
         self.label_9.setText(QCoreApplication.translate("MainWindow", "Average", None))
         self.groupFFTPlot.setTitle(

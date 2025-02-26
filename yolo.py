@@ -8,7 +8,6 @@ from PySide6.QtWidgets import (
     QDialog,
     QVBoxLayout,
     QMessageBox,
-    QWidget,
 )
 from PySide6.QtCore import QSettings
 from PySide6 import QtCore
@@ -22,6 +21,7 @@ from fftwidget import FFTWidget
 from thdwidget import THDWidget
 from oscwidget import OscWidget
 import engine as engine
+import matplotlib_rc
 
 
 company = "FM Homelab"
