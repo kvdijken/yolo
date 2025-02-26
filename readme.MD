@@ -45,8 +45,13 @@ python3 -m yolo.py
 
 ### On Windows:
 
+### On first use
 
+On first use the ip-addresses of the oscilloscope and the signal generator needs to be entered. This can be done in the Settings dialog:
 
+![Alt text](resources/settings.png)
+
+The data in this dialog will be saved in `/home/koen/.config/FM Homelab/yolo.conf`
 
 
 ## Tested with
@@ -105,5 +110,9 @@ uvloop               0.19.0a1
 
 - make engine a class
 - set sample memory as low as needed
+- make settings dialog a modal dialog
+- clean up code
+- document code
+ 
 
 
