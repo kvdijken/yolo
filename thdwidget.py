@@ -1,3 +1,5 @@
+from math import floor
+
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_qtagg import FigureCanvas
 from matplotlib.figure import Figure
@@ -61,6 +63,27 @@ class THDWidget(LiveWidget):
             high = (int(high // k) + 1) * k
             return low, high
 
+        def limit125(max: float)-> int:
+            '''
+            Returns the limit for the y-axis in a 1-2-5 regime.
+            '''
+            log = floor(np.log10(max))
+            # max in [.01 .. .1>: log = -2
+            # max in [.1 .. 1>: log = -1
+            # max in [1 .. 10>: log = 0
+            # max in [10 .. 100>: log = 1
+            # max in [100 .. 1000>: log = 2
+            first_digit = int(max / (10 ** log))
+            if first_digit < 1:
+                range = 1
+            elif first_digit < 2:
+                range = 2
+            elif first_digit < 5:
+                range = 5
+            else:
+                range = 10
+            return range * 10 ** log
+        
         x_ = f0_[0 : len(thd_)]
 
         # Plot THD
@@ -70,8 +93,7 @@ class THDWidget(LiveWidget):
         else:
             self.lineTHD.set_data(x_, y_)
             max = np.amax(y_)
-            k = 0.2
-            self.axL.set_ylim(0,(max//k + 1) * k)
+            self.axL.set_ylim(0,limit125(max))
 
         if ampl_ is not None and self.axR is not None:
             # Plot amplitude
