@@ -123,7 +123,6 @@ It is unknown how this works on other signal generators than the SDG1032X.
 - make settings dialog a modal dialog
 - clean up code
 - document code
-- better auto V/div adjustment in the oscilloscope views
 - prepare for oscilloscopes with more than 2 channels
 - export THD plot to file
 - export THD and Amplitude vs. frequency data to file in csv format
