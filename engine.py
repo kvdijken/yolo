@@ -376,26 +376,25 @@ def processFix(_fft, _thd, bins):
 
 #
 def vertical(v,sds_vdiv,sds_offs):
+    '''
+    Calculate the optimal Volts / division for the
+    current oscilloscope signal. The current oscilloscope
+    signal is in v.
+    
+    If the current signal does not fit set limits,
+    set the limits 1.25 times the current signal.
+    '''
     vmax = np.amax(v)
     vmin = np.amin(v)
     vdiff = vmax - vmin
-    vdiff *= 1.2
-    
-    # Calculate the optimal vertical scale (for 8 vertical 
-    # divisions), or 10, but then it does not fit on the scopes 
-    # screen
-    optimal_vdiv = vdiff / 8
 
-    # check if the next higher available coarse vdiv is equal to sds_vdiv
-    # If not, we can get higher resolution if we change the vertical scale
-    # on the scope.
-    next_higher_vdiv = vdiv_lookup[vdiv_lookup>optimal_vdiv][0]
-    
-    if next_higher_vdiv == sds_vdiv:
-        return True, sds_vdiv, sds_offs
-    else:
+    if vdiff / 8 > sds_vdiv:
+        optimal_vdiv = 1.25 * vdiff / 8
+        next_higher_vdiv = vdiv_lookup[vdiv_lookup>optimal_vdiv][0]
         optimal_offs = -(vmax + vmin) / 2
         return False, next_higher_vdiv, optimal_offs
+    else:
+        return True, sds_vdiv, sds_offs
 
 
 #
@@ -822,7 +821,7 @@ async def runSweep(settings):
     else:
         mainWindow.thdWidget.no_rightAxis()
 
-    # TODO display current frequency and running status
+    # Loop over all frequencies in the sweep
     for freq in f0_:
         # Set the current sweep frequency
         active[keyTHDf0] = freq
