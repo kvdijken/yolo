@@ -28,6 +28,10 @@ ampl_ = []
 # Number of periods from which to calculate THD
 periods = 25
 
+# Number of waveforms to skip before taking measurements
+_numberToSkip = 5
+
+
 # Global event which denotes that for the
 # current frequecy (in sweep mode) a THD
 # value has been collected.
@@ -299,7 +303,7 @@ def processSweep(thd,ampl):
         # Skip the first (few) samples to dismiss
         # any switching artefacts.
         _skip += 1
-        if _skip < 5:
+        if _skip < _numberToSkip:
             return
 
         _sweepSamples += 1
@@ -341,7 +345,7 @@ _fixS1_ = []
 
 #
 def processFix(_fft, _thd, bins):
-    global _fixTHD_, _fixS0_, _fixS1_
+    global _fixTHD_, _fixS0_, _fixS1_, _skip
 
     def runningMean(list, value, n):
         if len(list) == n:
@@ -350,6 +354,10 @@ def processFix(_fft, _thd, bins):
         return sum(list) / len(list)
 
     try:
+        _skip += 1
+        if _skip < _numberToSkip:
+            return
+
         yf = _fft[1]
         yf_dB = Vrms_to_dBVrms(V_to_Vrms(yf))
         s0 = yf_dB[bins[0]]
@@ -651,8 +659,12 @@ def validate(settings):
         freqFixed = validateReal(keySDGFixedF0)
         if freqFixed < 0:
             return False, "Fixed frequency cannot be negative."
-        if freqFixed > 30_000_000:
-            return False, "Fixed frequency cannot be larger than 30 MHz."
+        if settings[keySDGMode] in {SDGMode.AM, SDGMode.FM}:
+            if freqFixed > 20_000:
+                return False, "On the SDG1032X the  modulation frequency cannot be higher than 20 kHz."
+        else:
+            if freqFixed > 30_000_000:
+                return False, "Fixed frequency cannot be larger than 30 MHz."
 
         sweepMin = validateReal(keySDGSweepMinFreq)
         if sweepMin < 0:
@@ -668,7 +680,7 @@ def validate(settings):
             )
         if settings[keySDGMode] in {SDGMode.AM, SDGMode.FM}:
             if sweepMax > 20_000:
-                return False, "On the SDG1032X the  modulation frequency canno be higher than 20 kHz."
+                return False, "On the SDG1032X the  modulation frequency cannot be higher than 20 kHz."
         else:
             if sweepMax > 30_000_000:
                 return False, "Maximum sweep step frequency cannot be larger than 30 MHz."
@@ -760,7 +772,7 @@ async def startFix(settings):
     and return immediately. The fix mode process
     is a free running process, only halts on user request.
     """
-    global live_sds, _fixTHD_, _fixS0_, _fixS1_
+    global live_sds, _fixTHD_, _fixS0_, _fixS1_, _skip
 
     active[keyTHDf0] = settings[keySDGFixedF0]
 
@@ -775,6 +787,8 @@ async def startFix(settings):
     _fixTHD_ = []
     _fixS0_ = []
     _fixS1_ = []
+    _skip = 0
+
 
     # Set the SDG
     if settings[keySDGUse]:
