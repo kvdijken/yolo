@@ -128,7 +128,6 @@ It is unknown how this works on other signal generators than the SDG1032X.
 - sweep amplitude (this will require a major rework of the gui as well)
 - label both y-axes in THD plot with lines equal as in the plot
 - make last used measurement settings persistent across sessions
-- on the SDG1032X there is a limit to high the FM modulation frequency can be. For example: carrier frequency = 10.7MHz, frequency deviation = 75kHz, then the maximum modulation frequency can be 20kHz. Yolo should protect against setting modulationfrequency higher than this. The 20kHz limit is described in the SDG1032X user manual (p. 55). For AM modulation there is a similar maximum modulation frequency limit at 20kHz. Protecting against setting the modulation frequency higher than 20kHz touches on how general Yolo should be. Which other signal generators (with different limits, scpi, etc) should be supported? How should this be implemented.
 - starting a sweep analysis, the THD plot should be blank upon start. Now it remains with the previous contents.
 
 
