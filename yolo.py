@@ -218,14 +218,14 @@ class MainWindow(QMainWindow):
                 settings.endGroup()
 
         self._settings = Settings()
-        self._settings.show()
+        self._settings.exec()
 
     @QtCore.Slot()
     def about(self):
-        self._windowAbout = QMainWindow()
-        ui = ui_about.Ui_MainWindow()
+        self._windowAbout = QDialog()
+        ui = ui_about.Ui_Dialog()
         ui.setupUi(self._windowAbout)
-        self._windowAbout.show()
+        self._windowAbout.exec()
 
     #
     async def waitForFinish(self, eventFinish: asyncio.Event):
