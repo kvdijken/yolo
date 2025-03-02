@@ -120,7 +120,6 @@ It is unknown how this works on other signal generators than the SDG1032X.
 
 - make engine a class
 - set sample memory as low as needed
-- make settings dialog a modal dialog
 - clean up code
 - document code
 - prepare for oscilloscopes with more than 2 channels
