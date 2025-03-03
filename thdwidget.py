@@ -88,12 +88,12 @@ class THDWidget(LiveWidget):
 
         # Plot THD
         y_ = np.array(thd_)
+        max = np.amax(y_)
+        self.axL.set_ylim(0,limit125(max))
         if self.lineTHD is None:
             (self.lineTHD,) = self.axL.plot(x_, y_, "green", linewidth=2)
         else:
             self.lineTHD.set_data(x_, y_)
-            max = np.amax(y_)
-            self.axL.set_ylim(0,limit125(max))
 
         if ampl_ is not None and self.axR is not None:
             # Plot amplitude
