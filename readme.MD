@@ -128,7 +128,6 @@ It is unknown how this works on other signal generators than the SDG1032X.
 - sweep amplitude (this will require a major rework of the gui as well)
 - label both y-axes in THD plot with lines equal as in the plot
 - make last used measurement settings persistent across sessions
-- starting a sweep analysis, the THD plot should be blank upon start. Now it remains with the previous contents.
 
 
  

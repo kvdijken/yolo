@@ -19,12 +19,17 @@ text_size_points = default_text_size_points
 plt.rcParams['font.size'] = text_size_points
 
 plt.rcParams['figure.dpi'] = dpi
-mpl.rcParams['axes.prop_cycle'] = mpl.cycler(color=['green'],alpha=[0.66])
 
 plt.rcParams['toolbar'] = 'None'
 plt.rcParams['axes.xmargin'] = 0
 
-plt.rcParams['figure.facecolor'] = 'whitesmoke'
-#plt.rcParams['figure.facecolor'] = 'lightgrey'
-plt.rcParams['axes.facecolor'] = 'whitesmoke'
-
+if True:
+    mpl.rcParams['axes.prop_cycle'] = mpl.cycler(color=['green'],alpha=[0.66])
+    plt.rcParams['figure.facecolor'] = 'whitesmoke'
+    #plt.rcParams['figure.facecolor'] = 'lightgrey'
+    plt.rcParams['axes.facecolor'] = 'whitesmoke'
+else:
+    mpl.rcParams['axes.prop_cycle'] = mpl.cycler(color=['yellow'],alpha=[1])
+    mpl.rcParams["figure.facecolor"] = "black"
+    mpl.rcParams["axes.facecolor"] = "black"
+    mpl.rcParams["axes.edgecolor"] = "whitesmoke"
