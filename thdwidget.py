@@ -35,7 +35,7 @@ class THDWidget(LiveWidget):
         self.lineTHD = None
                 
     #
-    def setFrequencyAxis(self, f0_):
+    def newPlot(self, f0_):
         self.f0_ = f0_
         self.axL.set_xlim(f0_[0], f0_[-1])
         for ax in self.figure.axes:
@@ -44,6 +44,7 @@ class THDWidget(LiveWidget):
         if self.axR in self.figure.axes:
             self.figure.delaxes(self.axR)
         self.resetLines()
+        self.canvas.draw()
 
     #
     def plot(self, f0_, thd_, ampl_=None):

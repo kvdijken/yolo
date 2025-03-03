@@ -828,8 +828,7 @@ async def runSweep(settings):
     thd_ = []
     ampl_ = []
 
-#    mainWindow.thdWidget.resetTHDAxis()
-    mainWindow.thdWidget.setFrequencyAxis(f0_)
+    mainWindow.thdWidget.newPlot(f0_)
     if active[keyTHDPlotAmplitude]:
         mainWindow.thdWidget.rightAxis('Amplitude (dBvrms)')
     else:
