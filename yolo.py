@@ -1,11 +1,13 @@
 import os
 import sys
 import asyncio
+import json
 
 from PySide6.QtWidgets import (
     QApplication,
     QMainWindow,
     QDialog,
+    QFileDialog,
     QVBoxLayout,
     QMessageBox,
 )
@@ -14,6 +16,7 @@ from PySide6 import QtCore
 from PySide6.QtGui import QTextCursor
 
 import qasync
+import quantiphy
 
 from ui_yolo import Ui_MainWindow
 import ui_about, ui_settings
@@ -35,6 +38,8 @@ settingUseVisa = "use_visa"
 settingGroupSDS = "sds"
 settingSDSIP = "ip"
 settingSDSPort = "port"
+settingGroupTHD = "THD"
+settingsTHDDirectory = "directory"
 
 
 #
@@ -81,18 +86,46 @@ class MainWindow(QMainWindow):
         thdLayout.addWidget(self.thdWidget.canvas)
 
         # Set default values
+        self.setControls()
+
+        # Connect signals
+        self.ui.tabSDGFixedSweep.currentChanged.connect(
+            self.ui.stackTHD.setCurrentIndex
+        )
+        self.ui.tabSDGFixedSweep.currentChanged.connect(self.enablePlot)
+        self.ui.checkUseSDG.stateChanged.connect(self.useSDGChanged)
+        self.ui.actionOpenLRUControls.triggered.connect(self.openLRUControls)
+        self.ui.actionQuit.triggered.connect(self.quit)
+        self.ui.actionAbout.triggered.connect(self.about)
+        self.ui.actionSettings.triggered.connect(self.openSettings)
+
+        self.readSettings()
+
+    #
+    def setControls(self):
+        """
+        This will fill the UI-controls with the 
+        currently active values from the engine.        
+        """
+        
+        def q(x):
+            return quantiphy.Quantity(x).render()
+
+        self.ui.checkUseSDG.setCheckState(bool2QCheckState(engine.sdgUseSDG()))
         self.ui.cboSDG_ch.setCurrentText(str(engine.sdgChannel()))
-        self.ui.edtCW_amplitude.setText(str(engine.sdgCWAmplitude()))
-        self.ui.edtAM_freq.setText(engine.sdgAMFrequency())
-        self.ui.edtAM_amplitude.setText(str(engine.SDGAMAmplitude()))
-        self.ui.edtAM_modDepth.setText(str(engine.SDGAMModulationDepth()))
-        self.ui.edtFM_freq.setText(str(engine.SDGFMFrequency()))
-        self.ui.edtFM_amplitude.setText(str(engine.SDGFMAmplitude()))
-        self.ui.edtFM_freqDev.setText(str(engine.SDGFMFrequencyDeviation()))
-        self.ui.edtSDGFixed_f0.setText(str(engine.SDGFixedF0()))
-        self.ui.edtSDGSweep_minFreq.setText(str(engine.SDGSweepMinimumFrequency()))
-        self.ui.edtSDGSweep_maxFreq.setText(str(engine.SDGSweepMaximumFrequency()))
-        self.ui.edtSDGSweep_step.setText(str(engine.SDGSweepStep()))
+        self.ui.tabSDGModulation.setCurrentIndex(engine.sdgModulationToTabIndex[engine.sdgModulation()])
+        self.ui.edtCW_amplitude.setText(q(engine.sdgCWAmplitude()))
+        self.ui.edtAM_freq.setText(q(engine.sdgAMFrequency()))
+        self.ui.edtAM_amplitude.setText(q(engine.sdgAMAmplitude()))
+        self.ui.edtAM_modDepth.setText(q(engine.sdgAMModulationDepth()))
+        self.ui.edtFM_freq.setText(q(engine.sdgFMFrequency()))
+        self.ui.edtFM_amplitude.setText(q(engine.sdgFMAmplitude()))
+        self.ui.edtFM_freqDev.setText(q(engine.sdgFMFrequencyDeviation()))
+        self.ui.tabSDGFixedSweep.setCurrentIndex(engine.sdgFixSweepToTabIndex[engine.sdgFixSweep()])
+        self.ui.edtSDGFixed_f0.setText(q(engine.sdgFixedF0()))
+        self.ui.edtSDGSweep_minFreq.setText(q(engine.sdgSweepMinimumFrequency()))
+        self.ui.edtSDGSweep_maxFreq.setText(q(engine.sdgSweepMaximumFrequency()))
+        self.ui.edtSDGSweep_step.setText(q(engine.sdgSweepStep()))
         self.ui.cboSDS_ch.setCurrentText(str(engine.oscChannel()))
         self.ui.checkSDS_autoVertical.setCheckState(
             bool2QCheckState(engine.sdsAutoAdjustVertical())
@@ -100,31 +133,41 @@ class MainWindow(QMainWindow):
         self.ui.checkSDS_autoHorizontal.setCheckState(
             bool2QCheckState(engine.sdsAutoAdjustTimebase())
         )
-        self.ui.edtSDSPeriods.setText(str(engine.sdsPeriods()))
-        self.ui.edtTHDHarmonics.setText(str(engine.thdHarmonics()))
-        self.ui.edtTHDFloor.setText(str(engine.thdFloor()))
-        self.ui.edtTHDAverage.setText(str(engine.thdAverage()))
+        self.ui.edtSDSPeriods.setText(q(engine.sdsPeriods()))
+        self.ui.edtTHDHarmonics.setText(q(engine.thdHarmonics()))
+        self.ui.edtTHDFloor.setText(q(engine.thdFloor()))
+        self.ui.edtTHDAverage.setText(q(engine.thdAverage()))
         self.ui.edtTHDAmplitude.setCheckState(
             bool2QCheckState(engine.thdPlotAmplitude())
         )
-        self.ui.edtFFTPlotMinY.setText(str(engine.plotMinY()))
-        self.ui.edtFFTPlotMaxY.setText(str(engine.plotMaxY()))
-
-        self.ui.tabSDGFixedSweep.currentChanged.connect(
-            self.ui.stackTHD.setCurrentIndex
-        )
-        self.ui.tabSDGFixedSweep.currentChanged.connect(self.enablePlot)
-        self.ui.checkUseSDG.stateChanged.connect(self.useSDGChanged)
-
+        self.ui.edtFFTPlotMinY.setText(q(engine.plotMinY()))
+        self.ui.edtFFTPlotMaxY.setText(q(engine.plotMaxY()))
         self.enablePlot()
 
-        self.ui.actionQuit.triggered.connect(self.quit)
-        self.ui.actionAbout.triggered.connect(self.about)
-        self.ui.actionSettings.triggered.connect(self.openSettings)
-        self.loop = loop
+    #
+    @QtCore.Slot()
+    def openLRUControls(self):
+        dir = os.path.dirname(QSettings(company, name).fileName())
+        file = f"{dir}/lru_controls.json"
+        if os.path.isfile(file):
+            try:
+                with open(file, "r") as file:
+                    engine.active = json.load(file)
+                self.setControls()
+            except Exception as e:
+                print(e)
 
-        self.readSettings()
+    #
+    def saveLRUControls(self):
+        try:
+            dir = os.path.dirname(QSettings(company, name).fileName())
+            file = f"{dir}/lru_controls.json"
+            with open(file, "w") as file:
+                json.dump(engine.active, file)
+        except Exception as e:
+            print(e)
 
+    #
     @QtCore.Slot()
     def useSDGChanged(self):
         useSDG = engine.qCheckState2Bool(self.ui.checkUseSDG.checkState())
@@ -135,17 +178,36 @@ class MainWindow(QMainWindow):
 
     @QtCore.Slot()
     def quit(self):
-        self.writeSettings()
-        print("Done")
+        self.saveLRUControls()
+        print("Quit by Menu")
         os._exit(0)
 
     @QtCore.Slot()
     def enablePlot(self):
+        """
+        This will enable or disable the THD plot
+        according to the current active tab
+        fixed / swept operation.
+        """
         fixed = self.ui.tabSDGFixedSweep.currentIndex() == 0
         self.ui.groupTHDPlot.setVisible(not fixed)
 
+    #
     def readSettings(self):
-
+        """
+        This will read the settings from the QSettings.
+        These are settings which do not change often
+        like:
+        - IP address of the SDG
+        - Port of the SDG
+        - query delay when sending commands
+          to the SDG.
+        - IP address of the SDS
+        - Port of the SDS
+        - Directory of the THD files
+        - whether to use PyVisa or pydatacq
+        """
+        
         def valueToBool(value):
             return value.lower() == "true" if isinstance(value, str) else bool(value)
 
@@ -177,10 +239,21 @@ class MainWindow(QMainWindow):
         except:
             engine.sdsPort = None
         settings.endGroup()
+        settings.beginGroup(settingGroupTHD)
+        try:
+            engine.thdDirectory = settings.value(
+                settingsTHDDirectory, defaultValue=engine.thdDirectory
+            )
+        except:
+            engine.thdDirectory = None
+        settings.endGroup()
 
     @QtCore.Slot()
     def openSettings(self):
-
+        """
+        Will open the settings dialog.
+        """
+        
         class Settings(QDialog, ui_settings.Ui_Settings):
 
             def __init__(self, *args, **kwargs):
@@ -194,7 +267,15 @@ class MainWindow(QMainWindow):
                 self.radioPydatacq.setChecked(not engine.sdgUseVisa)
                 self.edtSDSIP.setText(engine.sdsIP)
                 self.edtSDSPort.setText(str(engine.sdsPort))
+                self.lblDirectory.setText(engine.thdDirectory)
                 self.btnOk.clicked.connect(self.save)
+                self.btnBrowseDirectory.clicked.connect(self.browseDirectory)
+
+            def browseDirectory(self):
+                directory = QFileDialog.getExistingDirectory(
+                    parent=self, caption="Select Directory", dir=engine.thdDirectory
+                )
+                self.lblDirectory.setText(directory)
 
             def save(self):
                 engine.sdgIP = self.edtSDGIP.text()
@@ -203,6 +284,7 @@ class MainWindow(QMainWindow):
                 engine.sdgUseVisa = self.radioPyvisa.isChecked()
                 engine.sdsIP = self.edtSDSIP.text()
                 engine.sdsPort = int(self.edtSDSPort.text())
+                engine.thdDirectory = self.lblDirectory.text()
 
                 # Save settings
                 settings = QSettings(company, name)
@@ -216,12 +298,18 @@ class MainWindow(QMainWindow):
                 settings.setValue(settingSDSIP, engine.sdsIP)
                 settings.setValue(settingSDSPort, engine.sdsPort)
                 settings.endGroup()
+                settings.beginGroup(settingGroupTHD)
+                settings.setValue(settingsTHDDirectory, engine.thdDirectory)
+                settings.endGroup()
 
         self._settings = Settings()
         self._settings.exec()
 
     @QtCore.Slot()
     def about(self):
+        """
+        Will show the About dialog.
+        """
         self._windowAbout = QDialog()
         ui = ui_about.Ui_Dialog()
         ui.setupUi(self._windowAbout)
@@ -305,5 +393,7 @@ if __name__ == "__main__":
 
     with loop:
         loop.run_until_complete(close)
+
+    window.saveLRUControls()
     print("Done")
     os._exit(0)

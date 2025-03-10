@@ -1,7 +1,11 @@
 import asyncio
-from enum import Enum
+from enum import IntEnum
 import copy
 import traceback
+from datetime import datetime
+
+import json
+import csv
 
 from PySide6 import QtCore
 import numpy as np
@@ -41,7 +45,7 @@ _eventSampled: asyncio.Event = None
 # Signal generator keys
 keySDGUse = "sdgUse"
 keySDGChannel = "sdgChannel"
-keySDGMode = "sdgMode"
+keySDGModulation = "sdgModulation"
 keySDGCWAmplitude = "sdgCWAmplitude"
 keySDGFixSweep = "sdgFixSweep"
 keySDGAMFrequency = "sdgAMFrequency"
@@ -74,28 +78,48 @@ keyTHDAverage = "thdAverage"
 keyTHDPlotAmplitude = "thdPlotAmplitude"
 
 
-class SDGMode(Enum):
-    CW = 0
-    AM = 1
-    FM = 2
+class SDGModulation(IntEnum):
+    CW = 1
+    AM = 2
+    FM = 3
 
 
-class SDGFixSweep(Enum):
-    FIX = 0
-    SWEEP = 1
+# Translation from SDGMode to the index of the modulation tab
+sdgModulationToTabIndex = {
+    SDGModulation.CW: 0,
+    SDGModulation.AM: 1,
+    SDGModulation.FM: 2,
+}
+sdgTabIndexToModulation = {
+    0: SDGModulation.CW,
+    1: SDGModulation.AM,
+    2: SDGModulation.FM,
+}
 
+
+class SDGFixSweep(IntEnum):
+    FIX = 1
+    SWEEP = 2
+
+
+# Translation from SDGFixSweep to the index of the fixed/sweep tab
+sdgFixSweepToTabIndex = {SDGFixSweep.FIX: 0, SDGFixSweep.SWEEP: 1}
+sdgTabIndexToFixSweep = {0: SDGFixSweep.FIX, 1: SDGFixSweep.SWEEP}
 
 # Holds the currently active parameters
+# on which the enigine is running now.
+# It always holds a valid combination
+# of parameters.
 # This serves as the defaults as well.
 active = {
     keySDGUse: True,
     keySDGChannel: 1,
-    keySDGMode: SDGMode.CW,
+    keySDGModulation: SDGModulation.CW,
     keySDGCWAmplitude: 1,
     keySDGFixSweep: SDGFixSweep.FIX,
     keySDGAMFrequency: "1M",
     keySDGAMAmplitude: 1,
-    keySDGAMModulationDepth: 50,    
+    keySDGAMModulationDepth: 50,
     keySDGFMFrequency: "10.7M",
     keySDGFMAmplitude: "1",
     keySDGFMFrequencyDeviation: "75k",
@@ -103,19 +127,15 @@ active = {
     keySDGSweepMinFreq: "1k",
     keySDGSweepMaxFreq: "10k",
     keySDGSweepStep: "500",
-    
     keySDSChannel: "1",
     keySDSAutoVertical: False,
     keySDSAutoTimebase: True,
     keySDSPeriods: 50,
-    
     keyTHDHarmonics: "5",
     keyTHDFloor: "-80",
     keyTHDAverage: "4",
-
     keyFFTPlotMinY: "-100",
     keyFFTPlotMaxY: "0",
-
     keyTHDPlotAmplitude: True,
 }
 
@@ -124,7 +144,6 @@ mainWindow = None
 
 live_sds = None
 sdg: SDG = None
-sdgMode: SDGMode = None
 
 
 def qCheckState2Bool(s):
@@ -137,11 +156,17 @@ sdgUseVisa = True
 sdgQueryDelay = 0.5
 sdsIP = ""
 sdsPort = 5025
+thdDirectory = None
 
 
 #
 def sdgUseSDG():
     return active[keySDGUse]
+
+
+#
+def sdgModulation():
+    return active[keySDGModulation]
 
 
 #
@@ -160,47 +185,52 @@ def sdgAMFrequency():
 
 
 #
-def SDGAMAmplitude():
+def sdgAMAmplitude():
     return active[keySDGAMAmplitude]
 
 
 #
-def SDGAMModulationDepth():
+def sdgAMModulationDepth():
     return active[keySDGAMModulationDepth]
 
 
 #
-def SDGFMFrequency():
+def sdgFMFrequency():
     return active[keySDGFMFrequency]
 
 
 #
-def SDGFMAmplitude():
+def sdgFMAmplitude():
     return active[keySDGFMAmplitude]
 
 
 #
-def SDGFMFrequencyDeviation():
+def sdgFMFrequencyDeviation():
     return active[keySDGFMFrequencyDeviation]
 
 
 #
-def SDGFixedF0():
+def sdgFixSweep():
+    return active[keySDGFixSweep]
+
+
+#
+def sdgFixedF0():
     return active[keySDGFixedF0]
 
 
 #
-def SDGSweepMinimumFrequency():
+def sdgSweepMinimumFrequency():
     return active[keySDGSweepMinFreq]
 
 
 #
-def SDGSweepMaximumFrequency():
+def sdgSweepMaximumFrequency():
     return active[keySDGSweepMaxFreq]
 
 
 #
-def SDGSweepStep():
+def sdgSweepStep():
     return active[keySDGSweepStep]
 
 
@@ -269,16 +299,29 @@ def log(txt):
     mainWindow.print(txt + "\n")
 
 
+# How many waves have been skipped before sampling
 _skip = 0
-_doSample = False
+
+# A flag to notify if the waveform can be sampled.
+_doSample: bool = False
+
+# The number of samples in the current sweep
+# This is used when we take average values
+# of the THD and amplitude.
 _sweepSamples = 0
 _sweepSumTHD = 0
 _sweepSumAmpl = 0
-_doSample: bool = False
+
 
 
 #
-def processSweep(thd,ampl):
+def processSweep(thd, ampl):
+    """
+    Parameters:
+
+    thd:    total harmonic distortion (%)
+    ampl:   Amplitude (dBvrms)
+    """
     global _skip, _eventSampled, _doSample, _sweepSamples, _sweepSumTHD, _sweepSumAmpl
 
     try:
@@ -318,18 +361,16 @@ def processSweep(thd,ampl):
         thd_.append(avgTHD)
         _sweepSumTHD = 0
 
-#        print(f'THD = {np.round(avgTHD,2)}%')
-        
         # Plot the amplitude
         avgAmpl = _sweepSumAmpl / _sweepSamples
         ampl_.append(avgAmpl)
         _sweepSumAmpl = 0
 
         if active[keyTHDPlotAmplitude]:
-            mainWindow.thdWidget.plot(f0_,thd_,ampl_)
+            mainWindow.thdWidget.plot(f0_, thd_, ampl_)
         else:
             mainWindow.thdWidget.plot(f0_, thd_)
-            
+
         _skip = 0
         _doSample = False
         _sweepSamples = 0
@@ -338,6 +379,8 @@ def processSweep(thd,ampl):
         traceback.print_exc()
 
 
+# Variables to maintain the running mean for the THD and the
+# s0 and s1 values.
 _fixTHD_ = []
 _fixS0_ = []
 _fixS1_ = []
@@ -345,9 +388,19 @@ _fixS1_ = []
 
 #
 def processFix(_fft, _thd, bins):
+    """
+    """
     global _fixTHD_, _fixS0_, _fixS1_, _skip
 
     def runningMean(list, value, n):
+        """
+        Maintains a running mean.
+        
+        Parameters:
+        list:   The list to maintain the running mean over.
+        value:  The value to add to the list.
+        n:      The number of samples to maintain in the list.
+        """
         if len(list) == n:
             list.pop(0)
         list.append(value)
@@ -383,22 +436,22 @@ def processFix(_fft, _thd, bins):
 
 
 #
-def vertical(v,sds_vdiv,sds_offs):
-    '''
+def vertical(v, sds_vdiv, sds_offs):
+    """
     Calculate the optimal Volts / division for the
     current oscilloscope signal. The current oscilloscope
     signal is in v.
-    
+
     If the current signal does not fit set limits,
     set the limits 1.25 times the current signal.
-    '''
+    """
     vmax = np.amax(v)
     vmin = np.amin(v)
     vdiff = vmax - vmin
 
     if vdiff / 8 > sds_vdiv:
         optimal_vdiv = 1.25 * vdiff / 8
-        next_higher_vdiv = vdiv_lookup[vdiv_lookup>optimal_vdiv][0]
+        next_higher_vdiv = vdiv_lookup[vdiv_lookup > optimal_vdiv][0]
         optimal_offs = -(vmax + vmin) / 2
         return False, next_higher_vdiv, optimal_offs
     else:
@@ -406,10 +459,10 @@ def vertical(v,sds_vdiv,sds_offs):
 
 
 #
-def setVertical(vdiv,offset):
-    ch = active[keySDSChannel]-1
-    live_sds.sds.setVDiv(ch,vdiv,'exact')
-    live_sds.sds.setOffset(ch,offset)
+def setVertical(vdiv, offset):
+    ch = active[keySDSChannel] - 1
+    live_sds.sds.setVDiv(ch, vdiv, "exact")
+    live_sds.sds.setOffset(ch, offset)
     return
 
 
@@ -420,13 +473,13 @@ async def processWave(wave):
             f0 = active[keyTHDf0]
         except:
             return
-        
+
         # time
         t = wave[1][0]
-        
+
         # voltage
         v = wave[1][1]
-        
+
         # Sanity check
         if t is None or v is None:
             return
@@ -439,7 +492,7 @@ async def processWave(wave):
         if t.shape[0] != v.shape[0]:
             # Time and voltage arrays not same size
             return
-        
+
         sds_vdiv = wave[1][2]
         sds_offs = wave[1][3]
 
@@ -479,17 +532,17 @@ async def processWave(wave):
             # If the view is not good, we cannot get a good FFT of it.
             # A good view means that we use the full dynamic range
             # of the oscilloscope.
-            right, vdiv, offset = vertical(v,sds_vdiv,sds_offs)
+            right, vdiv, offset = vertical(v, sds_vdiv, sds_offs)
             if not right:
-                setVertical(vdiv,offset)
+                setVertical(vdiv, offset)
                 return
-        
+
         # The verticals are set right. Now we can process the wave.
         if runningSweepMode:
             # Record THD and log it in the THD vs. freq graph
             _ampl_pp = np.amax(v) - np.amin(v)
-            _ampl_db_vrms = Vrms_to_dBVrms(V_to_Vrms(_ampl_pp/2))
-            processSweep(_thd,_ampl_db_vrms)
+            _ampl_db_vrms = Vrms_to_dBVrms(V_to_Vrms(_ampl_pp / 2))
+            processSweep(_thd, _ampl_db_vrms)
         else:
             # pass
             processFix(_fft, _thd, bins)
@@ -514,12 +567,9 @@ def getSettings():
     settings[keySDGUse] = qCheckState2Bool(ui.checkUseSDG.checkState())
     settings[keySDGChannel] = ui.cboSDG_ch.currentText()
 
-    if ui.tabSDGModulation.currentIndex() == 0:
-        settings[keySDGMode] = SDGMode.CW
-    elif ui.tabSDGModulation.currentIndex() == 1:
-        settings[keySDGMode] = SDGMode.AM
-    elif ui.tabSDGModulation.currentIndex() == 2:
-        settings[keySDGMode] = SDGMode.FM
+    settings[keySDGModulation] = sdgTabIndexToModulation[
+        ui.tabSDGModulation.currentIndex()
+    ]
 
     settings[keySDGCWAmplitude] = ui.edtCW_amplitude.text()
     settings[keySDGAMFrequency] = ui.edtAM_freq.text()
@@ -529,10 +579,7 @@ def getSettings():
     settings[keySDGFMAmplitude] = ui.edtFM_amplitude.text()
     settings[keySDGFMFrequencyDeviation] = ui.edtFM_freqDev.text()
 
-    if ui.tabSDGFixedSweep.currentIndex() == 0:
-        settings[keySDGFixSweep] = SDGFixSweep.FIX
-    else:
-        settings[keySDGFixSweep] = SDGFixSweep.SWEEP
+    settings[keySDGFixSweep] = sdgTabIndexToFixSweep[ui.tabSDGFixedSweep.currentIndex()]
 
     settings[keySDGFixedF0] = ui.edtSDGFixed_f0.text()
     settings[keySDGSweepMinFreq] = ui.edtSDGSweep_minFreq.text()
@@ -659,9 +706,12 @@ def validate(settings):
         freqFixed = validateReal(keySDGFixedF0)
         if freqFixed < 0:
             return False, "Fixed frequency cannot be negative."
-        if settings[keySDGMode] in {SDGMode.AM, SDGMode.FM}:
+        if settings[keySDGModulation] in {SDGModulation.AM, SDGModulation.FM}:
             if freqFixed > 20_000:
-                return False, "On the SDG1032X the  modulation frequency cannot be higher than 20 kHz."
+                return (
+                    False,
+                    "On the SDG1032X the  modulation frequency cannot be higher than 20 kHz.",
+                )
         else:
             if freqFixed > 30_000_000:
                 return False, "Fixed frequency cannot be larger than 30 MHz."
@@ -678,12 +728,18 @@ def validate(settings):
                 False,
                 "Maximum sweep frequency must be larger than the minimum sweep frequency.",
             )
-        if settings[keySDGMode] in {SDGMode.AM, SDGMode.FM}:
+        if settings[keySDGModulation] in {SDGModulation.AM, SDGModulation.FM}:
             if sweepMax > 20_000:
-                return False, "On the SDG1032X the  modulation frequency cannot be higher than 20 kHz."
+                return (
+                    False,
+                    "On the SDG1032X the  modulation frequency cannot be higher than 20 kHz.",
+                )
         else:
             if sweepMax > 30_000_000:
-                return False, "Maximum sweep step frequency cannot be larger than 30 MHz."
+                return (
+                    False,
+                    "Maximum sweep step frequency cannot be larger than 30 MHz.",
+                )
 
         #        validateInt(keySDGSweep_steps)
         sweepStep = validateReal(keySDGSweepStep)
@@ -738,11 +794,11 @@ async def setSDGFrequency(settings, freq):
     """
     active[keyTHDf0] = freq
     ch = str(settings[keySDGChannel])
-    if settings[keySDGMode] == SDGMode.CW:
+    if settings[keySDGModulation] == SDGModulation.CW:
         cmd = f"C{ch}:BSWV FRQ,{freq}"
-    elif settings[keySDGMode] == SDGMode.AM:
+    elif settings[keySDGModulation] == SDGModulation.AM:
         cmd = f"C{ch}:MDWV AM,FRQ,{freq}"
-    elif settings[keySDGMode] == SDGMode.FM:
+    elif settings[keySDGModulation] == SDGModulation.FM:
         cmd = f"C{ch}:MDWV FM,FRQ,{freq}"
     await sdgSend(cmd)
 
@@ -789,7 +845,6 @@ async def startFix(settings):
     _fixS1_ = []
     _skip = 0
 
-
     # Set the SDG
     if settings[keySDGUse]:
         await setSDGFrequency(settings, settings[keySDGFixedF0])
@@ -830,7 +885,7 @@ async def runSweep(settings):
 
     mainWindow.thdWidget.newPlot(f0_)
     if active[keyTHDPlotAmplitude]:
-        mainWindow.thdWidget.rightAxis('Amplitude (dBvrms)')
+        mainWindow.thdWidget.rightAxis("Amplitude (dBvrms)")
     else:
         mainWindow.thdWidget.no_rightAxis()
 
@@ -845,7 +900,6 @@ async def runSweep(settings):
         # Automatic timebase?
         if settings[keySDSAutoTimebase]:
             tb = timebase(freq)
-            #            await live_sds.sds.async_setTimebaseAtLeast(tb)
             live_sds.sds.setTimebaseAtLeast(tb)
 
         _eventSampled = asyncio.Event()
@@ -854,20 +908,86 @@ async def runSweep(settings):
         _sweepSumTHD = 0
         _doSample = True
         await _eventSampled.wait()
-        #        _doSample = False
         _eventSampled = None
         if _cancelSweep:
             break
+
+    # Save results to file
+    if thdDirectory is not None:
+        saveTHD(thdDirectory)
+
     _eventRunFinished.set()
+
+
+#
+def saveTHD(directory):
+    run = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+    # Save the THD settings to a file
+    saveSettings(directory, run)
+
+    # Save the frequency, THD and amplitude data to a file
+    saveData(directory, run)
+
+    # Save the THD plot to a file
+    savePlot(directory, run)
+
+
+#
+def savePlot(directory, run):
+    """
+    Saves the THD plot in a file.
+    
+    Parameters:
+    directory:  The directory where the file should be saved.
+    run:        The name of the run. This can be anything to
+                uniquely identify the run.
+    """
+    filename = directory + f"/{run} plot.png"
+    mainWindow.thdWidget.savePlot(filename)
+
+
+#
+def saveData(directory, run):
+    """
+    Saves the THD data in a file. It will
+    create a csv file with frequency, THD and
+    amplitude data.
+    
+    Parameters:
+    directory:  The directory where the file should be saved.
+    run:        The name of the run. This can be anything to
+                uniquely identify the run.
+    """
+    with open(directory + f"/{run} thd.csv", "w", newline="") as f:
+        writer = csv.writer(f, delimiter="\t")
+        writer.writerow(["f (Hz)", "thd (%)", "ampl (dBvrms)"])
+        for i in range(len(f0_)):
+            writer.writerow([np.round(f0_[i],2), np.round(thd_[i],2), np.round(ampl_[i])])
+
+
+#
+def saveSettings(directory, run):
+    """
+    Saves the current active parameters in a file.
+    These current active parameters are taken from
+    'active'.
+    
+    Parameters:
+    directory:  The directory where the file should be saved.
+    run:        The name of the run. This can be anything to
+                uniquely identify the run.
+    """
+    try:
+        with open(directory + f"/{run} controls.json", "w") as f:
+            f.write(json.dumps(active))
+    except Exception as e:
+        traceback.print_exc()
 
 
 #
 async def sdgSend(cmd):
     log(cmd)
-    # try:
-    #     await sdg.async_send(cmd)
-    # except Exception as e:
-    #     log(f"Fail: {repr(e)}")
     sdg.send(cmd)
     await asyncio.sleep(0)
 
@@ -886,7 +1006,7 @@ async def setupSDGandSDS(settings):
     if settings[keySDGUse]:
         # SDG
         if sdg is None:
-            sdg = SDG(sdgIP, sdgPort, use_visa=sdgUseVisa,query_delay = sdgQueryDelay)
+            sdg = SDG(sdgIP, sdgPort, use_visa=sdgUseVisa, query_delay=sdgQueryDelay)
 
         # Reset
         cmd = "*RST"
@@ -909,15 +1029,15 @@ async def setupSDGandSDS(settings):
         await sdgSend(cmd)
 
         # Set frequency, amplitude, modulation
-        if settings[keySDGMode] == SDGMode.CW:
+        if settings[keySDGModulation] == SDGModulation.CW:
             freq = settings[keySDGFixedF0]
             amp = settings[keySDGCWAmplitude]
             mod = None
-        elif settings[keySDGMode] == SDGMode.AM:
+        elif settings[keySDGModulation] == SDGModulation.AM:
             freq = settings[keySDGAMFrequency]
             amp = settings[keySDGAMAmplitude]
             mod = "AM"
-        if settings[keySDGMode] == SDGMode.FM:
+        if settings[keySDGModulation] == SDGModulation.FM:
             freq = settings[keySDGFMFrequency]
             amp = settings[keySDGFMAmplitude]
             mod = "FM"
@@ -973,46 +1093,30 @@ async def setupSDGandSDS(settings):
                 await sdgSend(cmd)
 
     # SDS
-    
+
     # Switch on channel
-    await sdsSend(f'C{int(active[keySDSChannel])}:TRA ON')
+    await sdsSend(f"C{int(active[keySDSChannel])}:TRA ON")
 
-    # AC coupling    
-    await sdsSend(f'C{int(active[keySDSChannel])}:CPL A1M')
-    
+    # AC coupling
+    await sdsSend(f"C{int(active[keySDSChannel])}:CPL A1M")
+
     # Zero Vertical offset
-    await sdsSend(f'C{int(active[keySDSChannel])}:OFST 0')
-    
-    # Trigger
-    await sdsSend(f'C{int(active[keySDSChannel])}:TRCP AC')
-    await sdsSend(f'TRIG_MODE AUTO')
-    await sdsSend(f'TRSE EDGE,SR,C{int(active[keySDSChannel])},HT,OFF')
-    await sdsSend('SET50')
-    
-    # THD
+    await sdsSend(f"C{int(active[keySDSChannel])}:OFST 0")
 
-    # Calculate the maximum frequency we need for proper
-    # THD calculation
+    # Trigger
+    await sdsSend(f"C{int(active[keySDSChannel])}:TRCP AC")
+    await sdsSend(f"TRIG_MODE AUTO")
+    await sdsSend(f"TRSE EDGE,SR,C{int(active[keySDSChannel])},HT,OFF")
+    await sdsSend("SET50")
+
     runningSweepMode = settings[keySDGFixSweep] == SDGFixSweep.SWEEP
-    # try:
-    #     if runningSweepMode:
-    #         # TODO This is not correct.
-    #         # In sweep mode, the THDMaxFrequency depends on the current
-    #         # frequency (and NOT the max sweep frequency) and the
-    #         # number of harmonics.
-    #         settings[keyTHDMaxFrequency] = SDGSweepMaximumFrequency() * thdHarmonics()
-    #     else:
-    #         settings[keyTHDMaxFrequency] = SDGFixedF0() * thdHarmonics()
-    #     log(f"Max freq = {q.Quantity(active[keyTHDMaxFrequency],'Hz').render(form='si')}")
-    # except:
-    #     traceback.print_exc()
-    return
 
 
 #
 async def run(settings):
     """
-    Performs the THD measurement according to the active paramters.
+    Performs the THD measurement according to the active
+    paramters in 'active'.
 
     The parameters already have been checked and made active.
     """
@@ -1101,4 +1205,13 @@ def stop(window):
     _cancelSweep = True
     if _eventRunFinished is not None:
         _eventRunFinished.set()
+        
+        # Save the settings (only for the fix mode).
+        # The sweep mode will save itself. after the
+        # sweep has finished. Thi scan be either on 
+        # user's request (by pressing stop), or when
+        # the sweep has finished.
+    if sdgFixSweep() == SDGFixSweep.FIX:
+        run = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        saveSettings(thdDirectory, run)
     return True, None

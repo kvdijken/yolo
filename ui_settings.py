@@ -7,7 +7,7 @@ class Ui_Settings(object):
     def setupUi(self, Settings):
         if not Settings.objectName():
             Settings.setObjectName(u"Settings")
-        Settings.resize(305, 380)
+        Settings.resize(464, 489)
         self.verticalLayout = QVBoxLayout(Settings)
         self.verticalLayout.setObjectName(u"verticalLayout")
         self.verticalLayout.setSizeConstraint(QLayout.SetFixedSize)
@@ -98,6 +98,42 @@ class Ui_Settings(object):
 
         self.verticalLayout_2.addWidget(self.groupOscilloscope)
 
+        self.groupBox = QGroupBox(self.fraSettings)
+        self.groupBox.setObjectName(u"groupBox")
+        self.formLayout_3 = QFormLayout(self.groupBox)
+        self.formLayout_3.setObjectName(u"formLayout_3")
+        self.label_6 = QLabel(self.groupBox)
+        self.label_6.setObjectName(u"label_6")
+
+        self.formLayout_3.setWidget(0, QFormLayout.LabelRole, self.label_6)
+
+        self.frame = QFrame(self.groupBox)
+        self.frame.setObjectName(u"frame")
+        self.frame.setFrameShape(QFrame.NoFrame)
+        self.frame.setFrameShadow(QFrame.Raised)
+        self.horizontalLayout_2 = QHBoxLayout(self.frame)
+        self.horizontalLayout_2.setObjectName(u"horizontalLayout_2")
+        self.horizontalLayout_2.setContentsMargins(0, 0, 0, 0)
+        self.lblDirectory = QLabel(self.frame)
+        self.lblDirectory.setObjectName(u"lblDirectory")
+
+        self.horizontalLayout_2.addWidget(self.lblDirectory)
+
+        self.horizontalSpacer_2 = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
+
+        self.horizontalLayout_2.addItem(self.horizontalSpacer_2)
+
+        self.btnBrowseDirectory = QPushButton(self.frame)
+        self.btnBrowseDirectory.setObjectName(u"btnBrowseDirectory")
+
+        self.horizontalLayout_2.addWidget(self.btnBrowseDirectory)
+
+
+        self.formLayout_3.setWidget(0, QFormLayout.FieldRole, self.frame)
+
+
+        self.verticalLayout_2.addWidget(self.groupBox)
+
         self.fraButtons = QFrame(self.fraSettings)
         self.fraButtons.setObjectName(u"fraButtons")
         self.fraButtons.setFrameShape(QFrame.NoFrame)
@@ -154,6 +190,10 @@ class Ui_Settings(object):
         self.groupOscilloscope.setTitle(QCoreApplication.translate("Settings", u"Oscillosope", None))
         self.label_2.setText(QCoreApplication.translate("Settings", u"IP", None))
         self.label_4.setText(QCoreApplication.translate("Settings", u"port", None))
+        self.groupBox.setTitle(QCoreApplication.translate("Settings", u"THD Plotfile", None))
+        self.label_6.setText(QCoreApplication.translate("Settings", u"Directory:", None))
+        self.lblDirectory.setText("")
+        self.btnBrowseDirectory.setText(QCoreApplication.translate("Settings", u"Browse ...", None))
         self.btnCancel.setText(QCoreApplication.translate("Settings", u"Cancel", None))
         self.btnOk.setText(QCoreApplication.translate("Settings", u"OK", None))
     # retranslateUi

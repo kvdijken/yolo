@@ -107,5 +107,7 @@ class THDWidget(LiveWidget):
 
         self.canvas.draw()
 
+    def savePlot(self, filename):
+        self.figure.savefig(filename)
 
 #
