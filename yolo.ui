@@ -1864,6 +1864,8 @@ QProgressBar::chunk
     <property name="title">
      <string>File</string>
     </property>
+    <addaction name="actionOpenSavedControls"/>
+    <addaction name="actionOpenLRUControls"/>
     <addaction name="actionSave_THD_plotfile"/>
     <addaction name="separator"/>
     <addaction name="actionQuit"/>
@@ -1902,6 +1904,16 @@ QProgressBar::chunk
   <action name="actionSettings">
    <property name="text">
     <string>Settings ...</string>
+   </property>
+  </action>
+  <action name="actionOpenLRUControls">
+   <property name="text">
+    <string>Open LRU controls</string>
+   </property>
+  </action>
+  <action name="actionOpenSavedControls">
+   <property name="text">
+    <string>Open saved controls ...</string>
    </property>
   </action>
  </widget>
