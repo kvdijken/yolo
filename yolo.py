@@ -94,7 +94,8 @@ class MainWindow(QMainWindow):
         )
         self.ui.tabSDGFixedSweep.currentChanged.connect(self.enablePlot)
         self.ui.checkUseSDG.stateChanged.connect(self.useSDGChanged)
-        self.ui.actionOpenLRUControls.triggered.connect(self.openLRUControls)
+        self.ui.actionLoadControls.triggered.connect(self.LoadControls)
+        self.ui.actionLoadLRUControls.triggered.connect(self.LoadLRUControls)
         self.ui.actionQuit.triggered.connect(self.quit)
         self.ui.actionAbout.triggered.connect(self.about)
         self.ui.actionSettings.triggered.connect(self.openSettings)
@@ -104,16 +105,18 @@ class MainWindow(QMainWindow):
     #
     def setControls(self):
         """
-        This will fill the UI-controls with the 
-        currently active values from the engine.        
+        This will fill the UI-controls with the
+        currently active values from the engine.
         """
-        
+
         def q(x):
             return quantiphy.Quantity(x).render()
 
         self.ui.checkUseSDG.setCheckState(bool2QCheckState(engine.sdgUseSDG()))
         self.ui.cboSDG_ch.setCurrentText(str(engine.sdgChannel()))
-        self.ui.tabSDGModulation.setCurrentIndex(engine.sdgModulationToTabIndex[engine.sdgModulation()])
+        self.ui.tabSDGModulation.setCurrentIndex(
+            engine.sdgModulationToTabIndex[engine.sdgModulation()]
+        )
         self.ui.edtCW_amplitude.setText(q(engine.sdgCWAmplitude()))
         self.ui.edtAM_freq.setText(q(engine.sdgAMFrequency()))
         self.ui.edtAM_amplitude.setText(q(engine.sdgAMAmplitude()))
@@ -121,7 +124,9 @@ class MainWindow(QMainWindow):
         self.ui.edtFM_freq.setText(q(engine.sdgFMFrequency()))
         self.ui.edtFM_amplitude.setText(q(engine.sdgFMAmplitude()))
         self.ui.edtFM_freqDev.setText(q(engine.sdgFMFrequencyDeviation()))
-        self.ui.tabSDGFixedSweep.setCurrentIndex(engine.sdgFixSweepToTabIndex[engine.sdgFixSweep()])
+        self.ui.tabSDGFixedSweep.setCurrentIndex(
+            engine.sdgFixSweepToTabIndex[engine.sdgFixSweep()]
+        )
         self.ui.edtSDGFixed_f0.setText(q(engine.sdgFixedF0()))
         self.ui.edtSDGSweep_minFreq.setText(q(engine.sdgSweepMinimumFrequency()))
         self.ui.edtSDGSweep_maxFreq.setText(q(engine.sdgSweepMaximumFrequency()))
@@ -146,7 +151,27 @@ class MainWindow(QMainWindow):
 
     #
     @QtCore.Slot()
-    def openLRUControls(self):
+    def LoadControls(self):
+        dir = engine.thdDirectory
+        loaded = False
+        while not loaded:
+            file = QFileDialog.getOpenFileName(
+                self, "Load controls", dir, "All Files (*.*);;JSON files (*.json)"
+            )[0]
+            if os.path.isfile(file):
+                try:
+                    with open(file, "r") as file:
+                        engine.active = json.load(file)
+                    self.setControls()
+                    loaded = True
+                except Exception as e:
+                    button = QMessageBox.critical(
+                        self, "Load Error", str(e), buttons=QMessageBox.Ok
+                    )
+
+    #
+    @QtCore.Slot()
+    def LoadLRUControls(self):
         dir = os.path.dirname(QSettings(company, name).fileName())
         file = f"{dir}/lru_controls.json"
         if os.path.isfile(file):
@@ -207,7 +232,7 @@ class MainWindow(QMainWindow):
         - Directory of the THD files
         - whether to use PyVisa or pydatacq
         """
-        
+
         def valueToBool(value):
             return value.lower() == "true" if isinstance(value, str) else bool(value)
 
@@ -253,7 +278,7 @@ class MainWindow(QMainWindow):
         """
         Will open the settings dialog.
         """
-        
+
         class Settings(QDialog, ui_settings.Ui_Settings):
 
             def __init__(self, *args, **kwargs):
@@ -329,21 +354,29 @@ class MainWindow(QMainWindow):
 
     @QtCore.Slot()
     def start_onclick(self):
-        started, b = engine.start(self)
+        """
+        This will start the engine and return
+        immediately. The engine will run in the
+        background.
+        """
+        started, returnValue = engine.start(self)
         if not started:
             # Show an error message
-            err = b
+            err = returnValue
             button = QMessageBox.critical(
                 self, "Start Error", err, buttons=QMessageBox.Ok
             )
         else:
-            eventRunFinished = b
+            # Create a task to wait for termination of the engine
+            eventRunFinished = returnValue
             task = asyncio.create_task(
                 self.waitForFinish(eventRunFinished), name="waitForFinish"
             )
             self._tasks.add(task)
+            # While the engine is running, disable the controls.
             self.enableControls(False)
 
+    #
     @QtCore.Slot()
     def stop_onclick(self):
         stopped, err = engine.stop(self)
@@ -374,7 +407,6 @@ class MainWindow(QMainWindow):
         sb.setValue(sb.maximum())
 
 
-# @QtCore.Slot()
 def exitHandler():
     close.set_result(True)
 

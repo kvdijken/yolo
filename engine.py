@@ -559,6 +559,11 @@ tasks = set()
 # Gets the settings from mainWindow.ui
 # No validation is done
 def getSettings():
+    """
+    Gets the control values from the main window
+    and puts them in a settings. No validation is
+    done on the values.
+    """
     settings = dict()
 
     ui = mainWindow.ui
@@ -921,20 +926,18 @@ async def runSweep(settings):
 
 #
 def saveTHD(directory):
-    run = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-
     # Save the THD settings to a file
-    saveSettings(directory, run)
+    saveSettings(directory)
 
     # Save the frequency, THD and amplitude data to a file
-    saveData(directory, run)
+    saveData(directory)
 
     # Save the THD plot to a file
-    savePlot(directory, run)
+    savePlot(directory)
 
 
 #
-def savePlot(directory, run):
+def savePlot(directory, run=None):
     """
     Saves the THD plot in a file.
     
@@ -943,12 +946,14 @@ def savePlot(directory, run):
     run:        The name of the run. This can be anything to
                 uniquely identify the run.
     """
+    if run is None:
+        run = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     filename = directory + f"/{run} plot.png"
     mainWindow.thdWidget.savePlot(filename)
 
 
 #
-def saveData(directory, run):
+def saveData(directory, run=None):
     """
     Saves the THD data in a file. It will
     create a csv file with frequency, THD and
@@ -959,6 +964,8 @@ def saveData(directory, run):
     run:        The name of the run. This can be anything to
                 uniquely identify the run.
     """
+    if run is None:
+        run = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     with open(directory + f"/{run} thd.csv", "w", newline="") as f:
         writer = csv.writer(f, delimiter="\t")
         writer.writerow(["f (Hz)", "thd (%)", "ampl (dBvrms)"])
@@ -967,7 +974,7 @@ def saveData(directory, run):
 
 
 #
-def saveSettings(directory, run):
+def saveSettings(directory, run=None):
     """
     Saves the current active parameters in a file.
     These current active parameters are taken from
@@ -976,9 +983,12 @@ def saveSettings(directory, run):
     Parameters:
     directory:  The directory where the file should be saved.
     run:        The name of the run. This can be anything to
-                uniquely identify the run.
+                uniquely identify the run. If None,
+                a datetime stamp will be used.
     """
     try:
+        if run is None:
+            run = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         with open(directory + f"/{run} controls.json", "w") as f:
             f.write(json.dumps(active))
     except Exception as e:
@@ -1208,10 +1218,9 @@ def stop(window):
         
         # Save the settings (only for the fix mode).
         # The sweep mode will save itself. after the
-        # sweep has finished. Thi scan be either on 
+        # sweep has finished. This can be either on 
         # user's request (by pressing stop), or when
         # the sweep has finished.
     if sdgFixSweep() == SDGFixSweep.FIX:
-        run = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        saveSettings(thdDirectory, run)
+        saveSettings(thdDirectory)
     return True, None
