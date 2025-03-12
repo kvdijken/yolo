@@ -1,6 +1,12 @@
 # Yolo
 ## Automated Distortion Analysis using a signal generator and an oscilloscope
 
+Yolo lets you measure signal distortion from signal generators, amplifiers, demodulators, filters etc. These measurements can be automated and repeated. Also sweeps over a frequency range can be performed. An oscilloscope and preferably a signal generator are required.
+
+This software has only been tested with Siglents SDS1202X-E oscilloscope and SDG1032X signal generator. For other oscilloscopes and signal generators the code will probably need to be adapted. Contact me through github if you need help.
+
+
+
 # Usage scenario's
 
 ## Scenario 1
