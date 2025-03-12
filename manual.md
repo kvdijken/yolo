@@ -1,4 +1,11 @@
+# Yolo
+## Automated Distortion Analysis using a signal generator and an oscilloscope
+
+
+The main window of Yolo looks like this:
+
 ![Alt text](resources/mainwindow.png)
+![Alt text](resources/main_window2.png)
 
 # Views
 
