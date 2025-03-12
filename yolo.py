@@ -41,6 +41,8 @@ settingSDSPort = "port"
 settingGroupTHD = "THD"
 settingsTHDDirectory = "directory"
 
+filenameLRUControls = "lru_controls.json"
+
 
 #
 def bool2QCheckState(b):
@@ -94,6 +96,9 @@ class MainWindow(QMainWindow):
         )
         self.ui.tabSDGFixedSweep.currentChanged.connect(self.enablePlot)
         self.ui.checkUseSDG.stateChanged.connect(self.useSDGChanged)
+        self.ui.checkSDS_autoHorizontal.stateChanged.connect(
+            self.sdsAutoAdjustTimebaseChanged
+        )
         self.ui.actionLoadControls.triggered.connect(self.LoadControls)
         self.ui.actionLoadLRUControls.triggered.connect(self.LoadLRUControls)
         self.ui.actionQuit.triggered.connect(self.quit)
@@ -173,7 +178,7 @@ class MainWindow(QMainWindow):
     @QtCore.Slot()
     def LoadLRUControls(self):
         dir = os.path.dirname(QSettings(company, name).fileName())
-        file = f"{dir}/lru_controls.json"
+        file = f"{dir}/{filenameLRUControls}"
         if os.path.isfile(file):
             try:
                 with open(file, "r") as file:
@@ -186,7 +191,7 @@ class MainWindow(QMainWindow):
     def saveLRUControls(self):
         try:
             dir = os.path.dirname(QSettings(company, name).fileName())
-            file = f"{dir}/lru_controls.json"
+            file = f"{dir}/{filenameLRUControls}"
             with open(file, "w") as file:
                 json.dump(engine.active, file)
         except Exception as e:
@@ -199,7 +204,13 @@ class MainWindow(QMainWindow):
         self.ui.cboSDG_ch.setEnabled(useSDG)
         self.ui.tabSDGModulation.setEnabled(useSDG)
         self.ui.tabSDGFixedSweep.setTabEnabled(1, useSDG)
-        return
+
+    @QtCore.Slot()
+    def sdsAutoAdjustTimebaseChanged(self):
+        autoAdjustTimebase = engine.qCheckState2Bool(
+            self.ui.checkSDS_autoHorizontal.checkState()
+        )
+        self.ui.edtSDSPeriods.setEnabled(autoAdjustTimebase)
 
     @QtCore.Slot()
     def quit(self):
