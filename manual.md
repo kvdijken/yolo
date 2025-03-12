@@ -28,7 +28,14 @@ In this scenario the CW signal to the oscilloscope comes from an unknown source.
 The main window of Yolo looks like this:
 
 ![Alt text](resources/mainwindow.png)
+
+In the above screengrab it shows a situation which corresponds to scenario 1, where channel 1 of the signal generator has been connected to channel 1 of the oscilloscope. The signal generator has been set to produce a 1V<sub>pp</sub> 1kHz sinewave. Yolo analyses the signal and finds a THD of 0.14%. This distortion may originate anywhere in the chain from the signal generator to where the signal is digitized, which is in the oscilloscope.
+
+
 ![Alt text](resources/main_window2.png)
+
+In the above screengrab a situation is shown which corresponds to scenario 2. Channel 2 of the signal generator has been connected to a FM demodulator, whose output has been connected to channel 2 of the oscilloscope. The signal generator has been programmed to produce a 1V<sub>pp</sub> 10.7MHz carrier, which is FM modulated with frequency deviation of 75kHz. The signal generator performs a sweep of the modulation frequency from 1kHz to 10kHz in 1kHz increments. The results are shown in the THD plot. The solid line shows the THD which drops from slightly more than 2.5% to slightly more than 2% while the amplitude drops from -10dB<sub>V<sub>rms</sub></sub> (dashed line).
+
 
 # Views
 
