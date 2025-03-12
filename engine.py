@@ -313,7 +313,6 @@ _sweepSumTHD = 0
 _sweepSumAmpl = 0
 
 
-
 #
 def processSweep(thd, ampl):
     """
@@ -388,14 +387,13 @@ _fixS1_ = []
 
 #
 def processFix(_fft, _thd, bins):
-    """
-    """
+    """ """
     global _fixTHD_, _fixS0_, _fixS1_, _skip
 
     def runningMean(list, value, n):
         """
         Maintains a running mean.
-        
+
         Parameters:
         list:   The list to maintain the running mean over.
         value:  The value to add to the list.
@@ -449,7 +447,7 @@ def vertical(v, sds_vdiv, sds_offs):
     vmin = np.amin(v)
     vdiff = vmax - vmin
 
-    if vdiff / 8 > sds_vdiv:
+    if (vdiff / 8 > sds_vdiv) or (vdiff / 4 < sds_vdiv):
         optimal_vdiv = 1.25 * vdiff / 8
         next_higher_vdiv = vdiv_lookup[vdiv_lookup > optimal_vdiv][0]
         optimal_offs = -(vmax + vmin) / 2
@@ -715,7 +713,7 @@ def validate(settings):
             if freqFixed > 20_000:
                 return (
                     False,
-                    "On the SDG1032X the  modulation frequency cannot be higher than 20 kHz.",
+                    "On the SDG1032X the modulation frequency cannot be higher than 20 kHz.",
                 )
         else:
             if freqFixed > 30_000_000:
@@ -940,7 +938,7 @@ def saveTHD(directory):
 def savePlot(directory, run=None):
     """
     Saves the THD plot in a file.
-    
+
     Parameters:
     directory:  The directory where the file should be saved.
     run:        The name of the run. This can be anything to
@@ -958,7 +956,7 @@ def saveData(directory, run=None):
     Saves the THD data in a file. It will
     create a csv file with frequency, THD and
     amplitude data.
-    
+
     Parameters:
     directory:  The directory where the file should be saved.
     run:        The name of the run. This can be anything to
@@ -970,7 +968,9 @@ def saveData(directory, run=None):
         writer = csv.writer(f, delimiter="\t")
         writer.writerow(["f (Hz)", "thd (%)", "ampl (dBvrms)"])
         for i in range(len(f0_)):
-            writer.writerow([np.round(f0_[i],2), np.round(thd_[i],2), np.round(ampl_[i])])
+            writer.writerow(
+                [np.round(f0_[i], 2), np.round(thd_[i], 2), np.round(ampl_[i])]
+            )
 
 
 #
@@ -979,7 +979,7 @@ def saveSettings(directory, run=None):
     Saves the current active parameters in a file.
     These current active parameters are taken from
     'active'.
-    
+
     Parameters:
     directory:  The directory where the file should be saved.
     run:        The name of the run. This can be anything to
@@ -1215,10 +1215,10 @@ def stop(window):
     _cancelSweep = True
     if _eventRunFinished is not None:
         _eventRunFinished.set()
-        
+
         # Save the settings (only for the fix mode).
         # The sweep mode will save itself. after the
-        # sweep has finished. This can be either on 
+        # sweep has finished. This can be either on
         # user's request (by pressing stop), or when
         # the sweep has finished.
     if sdgFixSweep() == SDGFixSweep.FIX:
