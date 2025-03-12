@@ -193,23 +193,41 @@ Here you can set the folder in which Yolo will store the
 Yolo needs the following packages to run:
 
 engineering-notation 0.10.0
+<br>
 fft_calculations     0.2.2
+<br>
 matplotlib           3.10.0
+<br>
 matplotlib-inline    0.1.6
+<br>
 numpy                2.2.2
+<br>
 pydatacq             0.4.5
+<br>
 PyQt6                6.8.0
+<br>
 PyQt6-Qt6            6.8.1
+<br>
 PyQt6_sip            13.9.1
+<br>
 PySide6              6.8.1.1
+<br>
 PySide6_Addons       6.8.1.1
+<br>
 PySide6_Essentials   6.8.1.1
+<br>
 PyVISA               1.14.1
+<br>
 PyVISA-py            0.7.2
+<br>
 qasync               0.27.1
+<br>
 quantiphy            2.20
+<br>
 scipy                1.15.1
+<br>
 uvloop               0.19.0a1
+<br>
 
 and runs fine on Python 3.11.11.
 
