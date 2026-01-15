@@ -163,6 +163,8 @@ class MainWindow(QMainWindow):
             file = QFileDialog.getOpenFileName(
                 self, "Load controls", dir, "All Files (*.*);;JSON files (*.json)"
             )[0]
+            if file == '':
+                break
             if os.path.isfile(file):
                 try:
                     with open(file, "r") as file:
