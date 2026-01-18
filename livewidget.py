@@ -25,6 +25,7 @@ class LiveWidget(FigureCanvas):
         self.axL.set_xlabel(xlabel)
         self.axL.set_ylabel(ylabel)
         self._cid = self.canvas.mpl_connect("resize_event", self.onResize)
+        
 
     #
     def rightAxis(self,label):
@@ -58,12 +59,10 @@ class LiveWidget(FigureCanvas):
             # Make sure we have an empty background to start with.
             if self.bg is None:
                 self.canvas.draw()
-                #                plt.pause(0.1)
                 self.bg = self.canvas.copy_from_bbox(self.axL.bbox)
 
             # Now restore the empty background and redraw the changed artists.
             if artist is not None:
-                #        fig.canvas.restore_region(bg)
                 self.canvas.restore_region(self.bg)
                 # convert artist to iterable artists
                 try:
@@ -79,7 +78,6 @@ class LiveWidget(FigureCanvas):
                             axDraw = axes[a]
                         axDraw.draw_artist(a)
             self.canvas.blit(self.axL.bbox)
-        #            self.canvas.flush_events()
         except:
             traceback.print_exc()
 
