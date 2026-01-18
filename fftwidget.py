@@ -2,6 +2,7 @@ from fft_calculations import V_to_Vrms, Vrms_to_dBVrms
 import quantiphy as q
 
 import traceback
+import functools
 
 from livewidget import LiveWidget
 
@@ -18,11 +19,22 @@ class FFTWidget(LiveWidget):
     ):
         super().__init__(parent, ylabel=ylabel, xlabel=xlabel, dpi=dpi)
         self.axL.xaxis.set_major_formatter(self.XAxis_Formatter)
+        
+        # on a change in x-ticks redraw everything, mainly because of the grid
+        self.axL.callbacks.connect("xlim_changed",functools.partial(self.xlim_changed,self))
 
     #
-    def onResize(self, event):
+    def force_redraw(self):
         self.bg = None
         self.canvas.draw()
+
+    #
+    def xlim_changed(self,*a,**kw):
+        self.force_redraw()
+        
+    #
+    def onResize(self, event):
+        self.force_redraw()
 
     #
     def XAxis_Formatter(self, x, pos):
