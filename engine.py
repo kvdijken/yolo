@@ -490,6 +490,12 @@ async def processWave(wave):
         if t.shape[0] != v.shape[0]:
             # Time and voltage arrays not same size
             return
+        if np.isnan(v).any():
+            # nan
+            return
+        if np.isinf(v).any():
+            # + or - inf
+            return
 
         sds_vdiv = wave[1][2]
         sds_offs = wave[1][3]
@@ -501,7 +507,7 @@ async def processWave(wave):
             _fft,
             q.Quantity(f0).real,
             min_level=dbVrms_to_dBV(active[keyTHDFloor]),
-            correct_peaks=False,
+            correct_peaks=True,
             harmonics=active[keyTHDHarmonics],
         )
 
