@@ -30,6 +30,17 @@ class FFTWidget(LiveWidget):
 
     #
     def xlim_changed(self,*a,**kw):
+ 
+        def cla(ax):
+            if ax is None:
+                return
+            for line in ax.get_lines():
+                line.remove()
+            for coll in ax.collections:
+                coll.remove()
+ 
+#        cla(self.axL)
+#        cla(self.axR)
         self.force_redraw()
         
     #
@@ -51,14 +62,14 @@ class FFTWidget(LiveWidget):
             # transform to dBvrms for the display
             yf_dB = Vrms_to_dBVrms(V_to_Vrms(yf))
 
-            # plot a x at harmonics, and remember the x's to remove them later
+            # plot a x at harmonics
             for p in bins[1:]:
                 item = self.axL.scatter(
                     xf[p], yf_dB[p], marker=7, color="blue", animated=True
                 )
                 items.append(item)
 
-            # plot a dot at fundamental frequency, and remember the dot to remove it later
+            # plot a dot at fundamental frequency
             item = self.axL.scatter(
                 xf[bins[0]], yf_dB[bins[0]], marker=7, color="red", animated=True
             )

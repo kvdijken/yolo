@@ -13,6 +13,8 @@ import numpy as np
 from livewidget import LiveWidget
 
 
+linear = False
+
 #
 class THDWidget(LiveWidget):
 
@@ -38,6 +40,9 @@ class THDWidget(LiveWidget):
     def newPlot(self, f0_):
         self.f0_ = f0_
         self.axL.set_xlim(f0_[0], f0_[-1])
+        if not linear:
+            self.axL.set_yscale('log')
+            self.axL.grid(True,'both',axis='y')
         for ax in self.figure.axes:
             for art in ax.lines:
                 art.remove()
@@ -64,7 +69,7 @@ class THDWidget(LiveWidget):
             high = (int(high // k) + 1) * k
             return low, high
 
-        def limit125(max: float)-> int:
+        def limit125(max: float, low=False)-> int:
             '''
             Returns the limit for the y-axis in a 1-2-5 regime.
             '''
@@ -83,6 +88,17 @@ class THDWidget(LiveWidget):
                 range = 5
             else:
                 range = 10
+            if low:
+                match range:
+                    case 1:
+                        range = 10
+                        log -= 1
+                    case 2:
+                        range = 1
+                    case 5:
+                        range = 2
+                    case 10:
+                        range = 5
             return range * 10 ** log
         
         x_ = f0_[0 : len(thd_)]
@@ -90,7 +106,11 @@ class THDWidget(LiveWidget):
         # Plot THD
         y_ = np.array(thd_)
         max = np.amax(y_)
-        self.axL.set_ylim(0,limit125(max))
+        min = np.amin(y_)
+        if linear:
+            self.axL.set_ylim(0,limit125(max))
+        else:
+            self.axL.set_ylim(limit125(min,low=True),limit125(max))
         if self.lineTHD is None:
             (self.lineTHD,) = self.axL.plot(x_, y_, "green", linewidth=2)
         else:

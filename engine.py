@@ -544,7 +544,7 @@ async def processWave(wave):
         # The verticals are set right. Now we can process the wave.
         if runningSweepMode:
             # Record THD and log it in the THD vs. freq graph
-            _ampl_pp = np.amax(v) - np.amin(v)
+            _ampl_pp = _fft[1][bins[0]] * 2  # peak-to-peak from fft fundamental
             _ampl_db_vrms = Vrms_to_dBVrms(V_to_Vrms(_ampl_pp / 2))
             processSweep(_thd, _ampl_db_vrms)
         else:
