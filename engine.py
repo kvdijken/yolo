@@ -33,7 +33,7 @@ ampl_ = []
 periods = 25
 
 # Number of waveforms to skip before taking measurements
-_numberToSkip = 5
+_numberToSkip = 3
 
 
 # Global event which denotes that for the
@@ -300,7 +300,7 @@ def log(txt):
 
 
 # How many waves have been skipped before sampling
-_skip = 0
+_skipped = 0
 
 # A flag to notify if the waveform can be sampled.
 _doSample: bool = False
@@ -314,19 +314,20 @@ _sweepSumAmpl = 0
 
 
 #
-def processSweep(thd, ampl):
+def processSweep(_fft,thd,bins):
     """
     Parameters:
 
     thd:    total harmonic distortion (%)
     ampl:   Amplitude (dBvrms)
+    bins:   The bins where the harmonics are located.
     """
-    global _skip, _eventSampled, _doSample, _sweepSamples, _sweepSumTHD, _sweepSumAmpl
+    global _skipped, _eventSampled, _doSample, _sweepSamples, _sweepSumTHD, _sweepSumAmpl
 
     try:
         if not _doSample:
             return
-
+        
         # ready?
         if len(thd_) == len(f0_):
             print("Should not happen, len(thd_) == len(f0_)")
@@ -344,13 +345,19 @@ def processSweep(thd, ampl):
 
         # Skip the first (few) samples to dismiss
         # any switching artefacts.
-        _skip += 1
-        if _skip < _numberToSkip:
+        if _skipped < _numberToSkip:
+            _skipped += 1
             return
+
+        # Plot again for the harmonics markers
+        mainWindow.fftWidget.plot(_fft, bins)
+
+        _ampl_pp = _fft[1][bins[0]] * 2  # peak-to-peak from fft fundamental
+        _ampl = Vrms_to_dBVrms(V_to_Vrms(_ampl_pp / 2))
 
         _sweepSamples += 1
         _sweepSumTHD += thd
-        _sweepSumAmpl += ampl
+        _sweepSumAmpl += _ampl
 
         if _sweepSamples < active[keyTHDAverage]:
             return
@@ -370,7 +377,7 @@ def processSweep(thd, ampl):
         else:
             mainWindow.thdWidget.plot(f0_, thd_)
 
-        _skip = 0
+        _skipped = 0
         _doSample = False
         _sweepSamples = 0
         _eventSampled.set()
@@ -388,7 +395,7 @@ _fixS1_ = []
 #
 def processFix(_fft, _thd, bins):
     """ """
-    global _fixTHD_, _fixS0_, _fixS1_, _skip
+    global _fixTHD_, _fixS0_, _fixS1_, _skipped
 
     def runningMean(list, value, n):
         """
@@ -405,8 +412,8 @@ def processFix(_fft, _thd, bins):
         return sum(list) / len(list)
 
     try:
-        _skip += 1
-        if _skip < _numberToSkip:
+        if _skipped < _numberToSkip:
+            _skipped += 1
             return
 
         yf = _fft[1]
@@ -511,8 +518,10 @@ async def processWave(wave):
             harmonics=active[keyTHDHarmonics],
         )
 
-        # FFT plot
-        mainWindow.fftWidget.plot(_fft, bins)
+        # FFT plot, no markers at the harmonics yet.
+        # Markers at the harmonics will be plotted later
+        # when we know the waveform is stable.
+        mainWindow.fftWidget.plot(_fft)
 
         # oscilloscope plot
         mainWindow.oscWidget.plot(wave)
@@ -544,11 +553,8 @@ async def processWave(wave):
         # The verticals are set right. Now we can process the wave.
         if runningSweepMode:
             # Record THD and log it in the THD vs. freq graph
-            _ampl_pp = _fft[1][bins[0]] * 2  # peak-to-peak from fft fundamental
-            _ampl_db_vrms = Vrms_to_dBVrms(V_to_Vrms(_ampl_pp / 2))
-            processSweep(_thd, _ampl_db_vrms)
+            processSweep(_fft, _thd, bins)
         else:
-            # pass
             processFix(_fft, _thd, bins)
 
     except:
@@ -837,7 +843,7 @@ async def startFix(settings):
     and return immediately. The fix mode process
     is a free running process, only halts on user request.
     """
-    global live_sds, _fixTHD_, _fixS0_, _fixS1_, _skip
+    global live_sds, _fixTHD_, _fixS0_, _fixS1_, _skipped
 
     active[keyTHDf0] = settings[keySDGFixedF0]
 
@@ -852,7 +858,7 @@ async def startFix(settings):
     _fixTHD_ = []
     _fixS0_ = []
     _fixS1_ = []
-    _skip = 0
+    _skipped = 0
 
     # Set the SDG
     if settings[keySDGUse]:

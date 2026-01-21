@@ -41,10 +41,6 @@ class OscWidget(LiveWidget):
             if slice is None:
                 pass
             else:
-                # size = len(wave[1][0])
-                # mid = size / 2
-                # i0 = int(mid - size / 2 / self.zoom)
-                # i1 = int(mid + size / 2 / self.zoom) - 1
                 t = t[slice[0]:slice[1]]
                 v = v[slice[0]:slice[1]]
 
@@ -64,12 +60,14 @@ class OscWidget(LiveWidget):
 
             self.draw([self.line])
 
+            # y-axis ticks logic
             v_max = np.amax(v)
             v_min = np.amin(v)
-            y_min = self._limits[self._limits < v_min * 1.1][-1]
-            y_max = self._limits[self._limits > v_max * 1.1][0]
-            _bot, _top = self.axL.get_ylim()
+            y_min = self._limits[self._limits < v_min * 1.2][-1] # largest limit < v_min*1.1
+            y_max = self._limits[self._limits > v_max * 1.2][0] # smallest limit > v_max*1.1
+            _bot, _top = self.axL.get_ylim() # current limits
             if _bot != y_min or _top != y_max:
+                # change in y-limits, redraw everything
                 self.axL.set_ylim(y_min, y_max)
                 self.redraw()
 
