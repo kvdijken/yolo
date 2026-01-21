@@ -61,7 +61,6 @@ keySDGSweepStep = "sdgSweepStep"
 
 # Oscilloscope keys
 keySDSChannel = "sdsChannel"
-keySDSAutoVertical = "sdsAutoVertical"
 keySDSAutoTimebase = "sdsAutoTimebase"
 keySDSPeriods = "sdsPeriods"
 
@@ -128,7 +127,6 @@ active = {
     keySDGSweepMaxFreq: "10k",
     keySDGSweepStep: "500",
     keySDSChannel: "1",
-    keySDSAutoVertical: False,
     keySDSAutoTimebase: True,
     keySDSPeriods: 50,
     keyTHDHarmonics: "5",
@@ -237,11 +235,6 @@ def sdgSweepStep():
 #
 def oscChannel():
     return active[keySDSChannel]
-
-
-#
-def sdsAutoAdjustVertical():
-    return active[keySDSAutoVertical]
 
 
 #
@@ -441,37 +434,6 @@ def processFix(_fft, _thd, bins):
 
 
 #
-def vertical(v, sds_vdiv, sds_offs):
-    """
-    Calculate the optimal Volts / division for the
-    current oscilloscope signal. The current oscilloscope
-    signal is in v.
-
-    If the current signal does not fit set limits,
-    set the limits 1.25 times the current signal.
-    """
-    vmax = np.amax(v)
-    vmin = np.amin(v)
-    vdiff = vmax - vmin
-
-    if (vdiff / 8 > sds_vdiv) or (vdiff / 4 < sds_vdiv):
-        optimal_vdiv = 1.25 * vdiff / 8
-        next_higher_vdiv = vdiv_lookup[vdiv_lookup > optimal_vdiv][0]
-        optimal_offs = -(vmax + vmin) / 2
-        return False, next_higher_vdiv, optimal_offs
-    else:
-        return True, sds_vdiv, sds_offs
-
-
-#
-def setVertical(vdiv, offset):
-    ch = active[keySDSChannel] - 1
-    live_sds.sds.setVDiv(ch, vdiv, "exact")
-    live_sds.sds.setOffset(ch, offset)
-    return
-
-
-#
 async def processWave(wave):
     try:
         try:
@@ -540,17 +502,6 @@ async def processWave(wave):
         slice = (i_0, i_1)
         mainWindow.zoomWidget.plot(wave, slice)
 
-        if active[keySDSAutoVertical]:
-            # First check if we have a good view of the waveform
-            # If the view is not good, we cannot get a good FFT of it.
-            # A good view means that we use the full dynamic range
-            # of the oscilloscope.
-            right, vdiv, offset = vertical(v, sds_vdiv, sds_offs)
-            if not right:
-                setVertical(vdiv, offset)
-                return
-
-        # The verticals are set right. Now we can process the wave.
         if runningSweepMode:
             # Record THD and log it in the THD vs. freq graph
             processSweep(_fft, _thd, bins)
@@ -603,9 +554,6 @@ def getSettings():
 
     # SDS
     settings[keySDSChannel] = ui.cboSDS_ch.currentText()
-    settings[keySDSAutoVertical] = qCheckState2Bool(
-        ui.checkSDS_autoVertical.checkState()
-    )
     settings[keySDSAutoTimebase] = qCheckState2Bool(
         ui.checkSDS_autoHorizontal.checkState()
     )

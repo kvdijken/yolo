@@ -137,9 +137,6 @@ class MainWindow(QMainWindow):
         self.ui.edtSDGSweep_maxFreq.setText(q(engine.sdgSweepMaximumFrequency()))
         self.ui.edtSDGSweep_step.setText(q(engine.sdgSweepStep()))
         self.ui.cboSDS_ch.setCurrentText(str(engine.oscChannel()))
-        self.ui.checkSDS_autoVertical.setCheckState(
-            bool2QCheckState(engine.sdsAutoAdjustVertical())
-        )
         self.ui.checkSDS_autoHorizontal.setCheckState(
             bool2QCheckState(engine.sdsAutoAdjustTimebase())
         )

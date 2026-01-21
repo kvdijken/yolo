@@ -61,16 +61,19 @@ class OscWidget(LiveWidget):
             self.draw([self.line])
 
             # y-axis ticks logic
-            v_max = np.amax(v)
-            v_min = np.amin(v)
+            v_max = np.amax(v) # max voltage
+            v_min = np.amin(v) # min voltage
             y_min = self._limits[self._limits < v_min * 1.2][-1] # largest limit < v_min*1.1
             y_max = self._limits[self._limits > v_max * 1.2][0] # smallest limit > v_max*1.1
+            # always center around 0V
+            _max = max(np.abs(y_min),np.abs(y_max))
             _bot, _top = self.axL.get_ylim() # current limits
-            if _bot != y_min or _top != y_max:
+            if max(np.abs(_bot),np.abs(_top)) != _max:
+                # current limits are different from required limits, so a
                 # change in y-limits, redraw everything
-                self.axL.set_ylim(y_min, y_max)
+                self.axL.set_ylim(-_max,_max)
                 self.redraw()
-
+            
         except:
             traceback.print_exc()
         return

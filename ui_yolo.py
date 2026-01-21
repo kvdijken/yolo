@@ -1071,8 +1071,8 @@ class Ui_MainWindow(object):
         self.horizontalLayout_6.setObjectName(u"horizontalLayout_6")
         self.fraFFT2 = QFrame(self.fraFFT)
         self.fraFFT2.setObjectName(u"fraFFT2")
-        self.fraFFT2.setFrameShape(QFrame.StyledPanel)
-        self.fraFFT2.setFrameShadow(QFrame.Raised)
+        self.fraFFT2.setFrameShape(QFrame.Shape.StyledPanel)
+        self.fraFFT2.setFrameShadow(QFrame.Shadow.Raised)
 
         self.horizontalLayout_6.addWidget(self.fraFFT2)
 
@@ -1092,8 +1092,8 @@ class Ui_MainWindow(object):
         self.horizontalLayout_3.setObjectName(u"horizontalLayout_3")
         self.fraZoom2 = QFrame(self.fraZoom)
         self.fraZoom2.setObjectName(u"fraZoom2")
-        self.fraZoom2.setFrameShape(QFrame.StyledPanel)
-        self.fraZoom2.setFrameShadow(QFrame.Raised)
+        self.fraZoom2.setFrameShape(QFrame.Shape.StyledPanel)
+        self.fraZoom2.setFrameShadow(QFrame.Shadow.Raised)
 
         self.horizontalLayout_3.addWidget(self.fraZoom2)
 
@@ -1110,8 +1110,8 @@ class Ui_MainWindow(object):
         self.horizontalLayout_5.setObjectName(u"horizontalLayout_5")
         self.fraOsc2 = QFrame(self.fraOsc)
         self.fraOsc2.setObjectName(u"fraOsc2")
-        self.fraOsc2.setFrameShape(QFrame.StyledPanel)
-        self.fraOsc2.setFrameShadow(QFrame.Raised)
+        self.fraOsc2.setFrameShape(QFrame.Shape.StyledPanel)
+        self.fraOsc2.setFrameShadow(QFrame.Shadow.Raised)
 
         self.horizontalLayout_5.addWidget(self.fraOsc2)
 
@@ -1132,7 +1132,7 @@ class Ui_MainWindow(object):
         self.pageFix.setObjectName(u"pageFix")
         self.verticalLayout_4 = QVBoxLayout(self.pageFix)
         self.verticalLayout_4.setObjectName(u"verticalLayout_4")
-        self.verticalSpacer_3 = QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding)
+        self.verticalSpacer_3 = QSpacerItem(20, 40, QSizePolicy.Expanding, QSizePolicy.Minimum)
 
         self.verticalLayout_4.addItem(self.verticalSpacer_3)
 
@@ -1141,35 +1141,35 @@ class Ui_MainWindow(object):
         font1 = QFont()
         font1.setPointSize(64)
         self.lblTHD.setFont(font1)
-        self.lblTHD.setAlignment(Qt.AlignCenter)
+        self.lblTHD.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.verticalLayout_4.addWidget(self.lblTHD)
 
         self.lblS0 = QLabel(self.pageFix)
         self.lblS0.setObjectName(u"lblS0")
         self.lblS0.setFont(font1)
-        self.lblS0.setAlignment(Qt.AlignCenter)
+        self.lblS0.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.verticalLayout_4.addWidget(self.lblS0)
 
         self.lblS1 = QLabel(self.pageFix)
         self.lblS1.setObjectName(u"lblS1")
         self.lblS1.setFont(font1)
-        self.lblS1.setAlignment(Qt.AlignCenter)
+        self.lblS1.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.verticalLayout_4.addWidget(self.lblS1)
 
-        self.verticalSpacer_4 = QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding)
+        self.verticalSpacer_4 = QSpacerItem(20, 40, QSizePolicy.Expanding, QSizePolicy.Minimum)
 
         self.verticalLayout_4.addItem(self.verticalSpacer_4)
 
         self.lblAverage = QLabel(self.pageFix)
         self.lblAverage.setObjectName(u"lblAverage")
-        self.lblAverage.setAlignment(Qt.AlignCenter)
+        self.lblAverage.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.verticalLayout_4.addWidget(self.lblAverage)
 
-        self.verticalSpacer_2 = QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding)
+        self.verticalSpacer_2 = QSpacerItem(20, 40, QSizePolicy.Expanding, QSizePolicy.Minimum)
 
         self.verticalLayout_4.addItem(self.verticalSpacer_2)
 
@@ -1203,8 +1203,8 @@ class Ui_MainWindow(object):
         sizePolicy2.setVerticalStretch(0)
         sizePolicy2.setHeightForWidth(self.frame_2.sizePolicy().hasHeightForWidth())
         self.frame_2.setSizePolicy(sizePolicy2)
-        self.frame_2.setFrameShape(QFrame.NoFrame)
-        self.frame_2.setFrameShadow(QFrame.Raised)
+        self.frame_2.setFrameShape(QFrame.Shape.NoFrame)
+        self.frame_2.setFrameShadow(QFrame.Shadow.Raised)
         self.verticalLayout_2 = QVBoxLayout(self.frame_2)
         self.verticalLayout_2.setObjectName(u"verticalLayout_2")
         self.verticalLayout_2.setContentsMargins(-1, 0, -1, 0)
@@ -1222,15 +1222,15 @@ class Ui_MainWindow(object):
         self.verticalLayout.setObjectName(u"verticalLayout")
         self.frame = QFrame(self.groupSignalGenerator)
         self.frame.setObjectName(u"frame")
-        self.frame.setFrameShape(QFrame.NoFrame)
-        self.frame.setFrameShadow(QFrame.Raised)
+        self.frame.setFrameShape(QFrame.Shape.NoFrame)
+        self.frame.setFrameShadow(QFrame.Shadow.Raised)
         self.frame.setLineWidth(1)
         self.formLayout_7 = QFormLayout(self.frame)
         self.formLayout_7.setObjectName(u"formLayout_7")
-        self.formLayout_7.setLabelAlignment(Qt.AlignRight|Qt.AlignTrailing|Qt.AlignVCenter)
+        self.formLayout_7.setLabelAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
         self.label = QLabel(self.frame)
         self.label.setObjectName(u"label")
-        self.label.setAlignment(Qt.AlignRight|Qt.AlignTrailing|Qt.AlignVCenter)
+        self.label.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
 
         self.formLayout_7.setWidget(1, QFormLayout.LabelRole, self.label)
 
@@ -1271,7 +1271,7 @@ class Ui_MainWindow(object):
         self.tabAM.setObjectName(u"tabAM")
         self.formLayout_3 = QFormLayout(self.tabAM)
         self.formLayout_3.setObjectName(u"formLayout_3")
-        self.formLayout_3.setLabelAlignment(Qt.AlignRight|Qt.AlignTrailing|Qt.AlignVCenter)
+        self.formLayout_3.setLabelAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
         self.label_14 = QLabel(self.tabAM)
         self.label_14.setObjectName(u"label_14")
 
@@ -1294,7 +1294,7 @@ class Ui_MainWindow(object):
 
         self.label_21 = QLabel(self.tabAM)
         self.label_21.setObjectName(u"label_21")
-        self.label_21.setTextFormat(Qt.AutoText)
+        self.label_21.setTextFormat(Qt.TextFormat.AutoText)
 
         self.formLayout_3.setWidget(1, QFormLayout.LabelRole, self.label_21)
 
@@ -1308,7 +1308,7 @@ class Ui_MainWindow(object):
         self.tabFM.setObjectName(u"tabFM")
         self.formLayout_4 = QFormLayout(self.tabFM)
         self.formLayout_4.setObjectName(u"formLayout_4")
-        self.formLayout_4.setLabelAlignment(Qt.AlignRight|Qt.AlignTrailing|Qt.AlignVCenter)
+        self.formLayout_4.setLabelAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
         self.label_13 = QLabel(self.tabFM)
         self.label_13.setObjectName(u"label_13")
 
@@ -1356,7 +1356,7 @@ class Ui_MainWindow(object):
         self.tabFixed.setObjectName(u"tabFixed")
         self.formLayout_6 = QFormLayout(self.tabFixed)
         self.formLayout_6.setObjectName(u"formLayout_6")
-        self.formLayout_6.setLabelAlignment(Qt.AlignRight|Qt.AlignTrailing|Qt.AlignVCenter)
+        self.formLayout_6.setLabelAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
         self.label_3 = QLabel(self.tabFixed)
         self.label_3.setObjectName(u"label_3")
 
@@ -1372,10 +1372,10 @@ class Ui_MainWindow(object):
         self.tabSweep.setObjectName(u"tabSweep")
         self.formLayout = QFormLayout(self.tabSweep)
         self.formLayout.setObjectName(u"formLayout")
-        self.formLayout.setLabelAlignment(Qt.AlignRight|Qt.AlignTrailing|Qt.AlignVCenter)
+        self.formLayout.setLabelAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
         self.label_15 = QLabel(self.tabSweep)
         self.label_15.setObjectName(u"label_15")
-        self.label_15.setAlignment(Qt.AlignLeading|Qt.AlignLeft|Qt.AlignVCenter)
+        self.label_15.setAlignment(Qt.AlignmentFlag.AlignLeading|Qt.AlignmentFlag.AlignLeft|Qt.AlignmentFlag.AlignVCenter)
 
         self.formLayout.setWidget(0, QFormLayout.LabelRole, self.label_15)
 
@@ -1386,7 +1386,7 @@ class Ui_MainWindow(object):
 
         self.label_20 = QLabel(self.tabSweep)
         self.label_20.setObjectName(u"label_20")
-        self.label_20.setAlignment(Qt.AlignLeading|Qt.AlignLeft|Qt.AlignVCenter)
+        self.label_20.setAlignment(Qt.AlignmentFlag.AlignLeading|Qt.AlignmentFlag.AlignLeft|Qt.AlignmentFlag.AlignVCenter)
 
         self.formLayout.setWidget(1, QFormLayout.LabelRole, self.label_20)
 
@@ -1416,10 +1416,10 @@ class Ui_MainWindow(object):
         self.groupOSC.setObjectName(u"groupOSC")
         self.formLayout_8 = QFormLayout(self.groupOSC)
         self.formLayout_8.setObjectName(u"formLayout_8")
-        self.formLayout_8.setLabelAlignment(Qt.AlignRight|Qt.AlignTrailing|Qt.AlignVCenter)
+        self.formLayout_8.setLabelAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
         self.label_2 = QLabel(self.groupOSC)
         self.label_2.setObjectName(u"label_2")
-        self.label_2.setAlignment(Qt.AlignLeading|Qt.AlignLeft|Qt.AlignVCenter)
+        self.label_2.setAlignment(Qt.AlignmentFlag.AlignLeading|Qt.AlignmentFlag.AlignLeft|Qt.AlignmentFlag.AlignVCenter)
 
         self.formLayout_8.setWidget(0, QFormLayout.LabelRole, self.label_2)
 
@@ -1430,46 +1430,36 @@ class Ui_MainWindow(object):
 
         self.formLayout_8.setWidget(0, QFormLayout.FieldRole, self.cboSDS_ch)
 
-        self.label_24 = QLabel(self.groupOSC)
-        self.label_24.setObjectName(u"label_24")
-
-        self.formLayout_8.setWidget(1, QFormLayout.LabelRole, self.label_24)
-
-        self.checkSDS_autoVertical = QCheckBox(self.groupOSC)
-        self.checkSDS_autoVertical.setObjectName(u"checkSDS_autoVertical")
-
-        self.formLayout_8.setWidget(1, QFormLayout.FieldRole, self.checkSDS_autoVertical)
-
         self.label_25 = QLabel(self.groupOSC)
         self.label_25.setObjectName(u"label_25")
 
-        self.formLayout_8.setWidget(2, QFormLayout.LabelRole, self.label_25)
+        self.formLayout_8.setWidget(1, QFormLayout.LabelRole, self.label_25)
 
         self.checkSDS_autoHorizontal = QCheckBox(self.groupOSC)
         self.checkSDS_autoHorizontal.setObjectName(u"checkSDS_autoHorizontal")
         self.checkSDS_autoHorizontal.setChecked(True)
 
-        self.formLayout_8.setWidget(2, QFormLayout.FieldRole, self.checkSDS_autoHorizontal)
+        self.formLayout_8.setWidget(1, QFormLayout.FieldRole, self.checkSDS_autoHorizontal)
 
         self.label_4 = QLabel(self.groupOSC)
         self.label_4.setObjectName(u"label_4")
 
-        self.formLayout_8.setWidget(3, QFormLayout.LabelRole, self.label_4)
+        self.formLayout_8.setWidget(2, QFormLayout.LabelRole, self.label_4)
 
         self.edtSDSPeriods = QLineEdit(self.groupOSC)
         self.edtSDSPeriods.setObjectName(u"edtSDSPeriods")
 
-        self.formLayout_8.setWidget(3, QFormLayout.FieldRole, self.edtSDSPeriods)
+        self.formLayout_8.setWidget(2, QFormLayout.FieldRole, self.edtSDSPeriods)
 
 
         self.verticalLayout_3.addWidget(self.groupOSC)
 
         self.groupTHD = QGroupBox(self.widgetControls)
         self.groupTHD.setObjectName(u"groupTHD")
-        self.groupTHD.setAlignment(Qt.AlignLeading|Qt.AlignLeft|Qt.AlignVCenter)
+        self.groupTHD.setAlignment(Qt.AlignmentFlag.AlignLeading|Qt.AlignmentFlag.AlignLeft|Qt.AlignmentFlag.AlignVCenter)
         self.formLayout_5 = QFormLayout(self.groupTHD)
         self.formLayout_5.setObjectName(u"formLayout_5")
-        self.formLayout_5.setLabelAlignment(Qt.AlignRight|Qt.AlignTrailing|Qt.AlignVCenter)
+        self.formLayout_5.setLabelAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
         self.label_5 = QLabel(self.groupTHD)
         self.label_5.setObjectName(u"label_5")
 
@@ -1482,7 +1472,7 @@ class Ui_MainWindow(object):
 
         self.label_16 = QLabel(self.groupTHD)
         self.label_16.setObjectName(u"label_16")
-        self.label_16.setAlignment(Qt.AlignLeading|Qt.AlignLeft|Qt.AlignVCenter)
+        self.label_16.setAlignment(Qt.AlignmentFlag.AlignLeading|Qt.AlignmentFlag.AlignLeft|Qt.AlignmentFlag.AlignVCenter)
 
         self.formLayout_5.setWidget(2, QFormLayout.LabelRole, self.label_16)
 
@@ -1508,10 +1498,10 @@ class Ui_MainWindow(object):
         self.groupFFTPlot.setObjectName(u"groupFFTPlot")
         self.formLayout_9 = QFormLayout(self.groupFFTPlot)
         self.formLayout_9.setObjectName(u"formLayout_9")
-        self.formLayout_9.setLabelAlignment(Qt.AlignRight|Qt.AlignTrailing|Qt.AlignVCenter)
+        self.formLayout_9.setLabelAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
         self.label_17 = QLabel(self.groupFFTPlot)
         self.label_17.setObjectName(u"label_17")
-        self.label_17.setAlignment(Qt.AlignLeading|Qt.AlignLeft|Qt.AlignVCenter)
+        self.label_17.setAlignment(Qt.AlignmentFlag.AlignLeading|Qt.AlignmentFlag.AlignLeft|Qt.AlignmentFlag.AlignVCenter)
 
         self.formLayout_9.setWidget(0, QFormLayout.LabelRole, self.label_17)
 
@@ -1522,7 +1512,7 @@ class Ui_MainWindow(object):
 
         self.label_18 = QLabel(self.groupFFTPlot)
         self.label_18.setObjectName(u"label_18")
-        self.label_18.setAlignment(Qt.AlignLeading|Qt.AlignLeft|Qt.AlignVCenter)
+        self.label_18.setAlignment(Qt.AlignmentFlag.AlignLeading|Qt.AlignmentFlag.AlignLeft|Qt.AlignmentFlag.AlignVCenter)
 
         self.formLayout_9.setWidget(1, QFormLayout.LabelRole, self.label_18)
 
@@ -1538,7 +1528,7 @@ class Ui_MainWindow(object):
         self.groupTHDPlot.setObjectName(u"groupTHDPlot")
         self.formLayout_10 = QFormLayout(self.groupTHDPlot)
         self.formLayout_10.setObjectName(u"formLayout_10")
-        self.formLayout_10.setLabelAlignment(Qt.AlignRight|Qt.AlignTrailing|Qt.AlignVCenter)
+        self.formLayout_10.setLabelAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
         self.label_6 = QLabel(self.groupTHDPlot)
         self.label_6.setObjectName(u"label_6")
 
@@ -1564,7 +1554,7 @@ class Ui_MainWindow(object):
         font2 = QFont()
         font2.setFamily(u"Monospace")
         self.textComm.setFont(font2)
-        self.textComm.setLineWrapMode(QTextEdit.NoWrap)
+        self.textComm.setLineWrapMode(QTextEdit.LineWrapMode.NoWrap)
         self.textComm.setReadOnly(True)
 
         self.horizontalLayout_2.addWidget(self.textComm)
@@ -1574,8 +1564,8 @@ class Ui_MainWindow(object):
 
         self.frame_5 = QFrame(self.frame_2)
         self.frame_5.setObjectName(u"frame_5")
-        self.frame_5.setFrameShape(QFrame.NoFrame)
-        self.frame_5.setFrameShadow(QFrame.Raised)
+        self.frame_5.setFrameShape(QFrame.Shape.NoFrame)
+        self.frame_5.setFrameShadow(QFrame.Shadow.Raised)
         self.horizontalLayout_4 = QHBoxLayout(self.frame_5)
         self.horizontalLayout_4.setObjectName(u"horizontalLayout_4")
         self.horizontalSpacer = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
@@ -1605,7 +1595,7 @@ class Ui_MainWindow(object):
         MainWindow.setCentralWidget(self.centralwidget)
         self.menuBar = QMenuBar(MainWindow)
         self.menuBar.setObjectName(u"menuBar")
-        self.menuBar.setGeometry(QRect(0, 0, 1788, 25))
+        self.menuBar.setGeometry(QRect(0, 0, 1788, 26))
         self.menuFile = QMenu(self.menuBar)
         self.menuFile.setObjectName(u"menuFile")
         self.menuHelp = QMenu(self.menuBar)
@@ -1628,8 +1618,7 @@ class Ui_MainWindow(object):
         QWidget.setTabOrder(self.edtSDGSweep_minFreq, self.edtSDGSweep_maxFreq)
         QWidget.setTabOrder(self.edtSDGSweep_maxFreq, self.edtSDGSweep_step)
         QWidget.setTabOrder(self.edtSDGSweep_step, self.cboSDS_ch)
-        QWidget.setTabOrder(self.cboSDS_ch, self.checkSDS_autoVertical)
-        QWidget.setTabOrder(self.checkSDS_autoVertical, self.checkSDS_autoHorizontal)
+        QWidget.setTabOrder(self.cboSDS_ch, self.checkSDS_autoHorizontal)
         QWidget.setTabOrder(self.checkSDS_autoHorizontal, self.edtSDSPeriods)
         QWidget.setTabOrder(self.edtSDSPeriods, self.edtTHDHarmonics)
         QWidget.setTabOrder(self.edtTHDHarmonics, self.edtTHDFloor)
@@ -1705,8 +1694,6 @@ class Ui_MainWindow(object):
         self.cboSDS_ch.setItemText(0, QCoreApplication.translate("MainWindow", u"1", None))
         self.cboSDS_ch.setItemText(1, QCoreApplication.translate("MainWindow", u"2", None))
 
-        self.label_24.setText(QCoreApplication.translate("MainWindow", u"Auto adjust V/div", None))
-        self.checkSDS_autoVertical.setText("")
         self.label_25.setText(QCoreApplication.translate("MainWindow", u"Auto adjust timescale", None))
         self.checkSDS_autoHorizontal.setText("")
         self.label_4.setText(QCoreApplication.translate("MainWindow", u"Periods", None))
