@@ -70,7 +70,7 @@ The data in this dialog will be saved in `/home/<user>/.config/FM Homelab/yolo.c
 ## Requirements
 engineering-notation 0.10.0
 <br>
-fft_calculations     0.2.2
+fft_calculations     0.2.3
 <br>
 matplotlib           3.10.0
 <br>
