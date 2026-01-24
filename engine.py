@@ -409,6 +409,9 @@ def processFix(_fft, _thd, bins):
             _skipped += 1
             return
 
+        # Plot again for the harmonics markers
+        mainWindow.fftWidget.plot(_fft, bins)
+
         yf = _fft[1]
         yf_dB = Vrms_to_dBVrms(V_to_Vrms(yf))
         s0 = yf_dB[bins[0]]
